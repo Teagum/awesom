@@ -7,11 +7,11 @@ from scipy.spatial import cKDTree
 from scipy.spatial import distance
 
 from apollon.io import io as aio
-from . import neighbors as _neighbors
 from . import utilities as asu
 
 from . types import Array, Coord, Metric, Shape, SomDims, WeightInit
 from . import defaults
+from . import neighbors
 
 
 class SomGrid:
@@ -75,7 +75,7 @@ class SomBase:
         self._weights: Array | None = None
 
         try:
-            self._neighbourhood = getattr(_neighbors, nh_shape)
+            self._neighbourhood = getattr(neighbors, nh_shape)
         except AttributeError:
             raise AttributeError(f'Neighborhood shape {nh_shape} is unknown.'
                                  'Use one `gaussian`, `mexican`, `rect`, or'
@@ -369,7 +369,7 @@ class IncrementalKDTReeMap(SomBase):
                 nh_idx = self._grid.nhb_idx(np.unravel_index(*bmu, self.shape), c_nhr)
                 #dists = _distance.cdist(self._grid.pos[nh_idx], self._grid.pos[bmu])
                 dists = np.ones(nh_idx.shape[0])
-                kern = _neighbors.gauss_kern(dists.ravel(), c_nhr) * c_eta
+                kern = neighbors.gauss_kern(dists.ravel(), c_nhr) * c_eta
                 self._weights[nh_idx] += ((fvect - self._weights[nh_idx]) * kern[:, None])
 
             _, err = asu.best_match(self.weights, train_data, self.metric)
