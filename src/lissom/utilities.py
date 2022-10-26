@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial import distance as _distance
 from scipy import stats as _stats
 
-from apollon import tools
+from . typealias import Array
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
@@ -129,7 +129,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     n_units = n_rows * n_cols
     if data is None:
         data = np.random.randint(-100, 100, (300, n_feats))
-    vals, vects, trans_data = tools.pca(data, 2)
+    vals, vects, trans_data = pca(data, 2)
     data_limits = np.column_stack((trans_data.min(axis=0),
                                    trans_data.max(axis=0)))
     if 'adapt' in kwargs and kwargs['adapt'] is True:
@@ -239,6 +239,29 @@ def distribute(bmu_idx: Iterable[int], n_units: int
     for data_idx, bmu in enumerate(bmu_idx):
         unit_matches[bmu].append(data_idx)
     return unit_matches
+
+
+def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
+    """Perfom principal component analysis
+
+    Interanlly, ``data`` will be centered but not scaled.
+
+    Args:
+        data:     Data set
+        n_comps:  Number of principal components
+
+    Returns:
+        ``n_comps`` largest singular values,
+        ``n_comps`` largest eigen vectors,
+        transformed input data.
+    """
+    data_centered = (data - data.mean(axis=0))
+    _, vals, vects = np.linalg.svd(data_centered)
+
+    ord_idx = np.flip(vals.argsort())[:n_comps]
+    vals = vals[ord_idx]
+    vects = vects[ord_idx]
+    return vals, vects, data_centered @ vects.T
 
 
 weight_initializer = {
