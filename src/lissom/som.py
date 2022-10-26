@@ -12,10 +12,9 @@ from apollon.io import io as aio
 from apollon.som import defaults as _defaults
 from . import neighbors as _neighbors
 from . import utilities as asu
-from .. types import Array, Shape, SomDims, Coord
 
-WeightInit = Union[Callable[[Array, Shape], Array], str]
-Metric = Union[Callable[[Array, Array], float], str]
+from . types import Array, Shape, SomDims, Coord
+
 
 
 class SomGrid:

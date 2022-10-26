@@ -2,16 +2,11 @@
 Neighborhood computations
 """
 
-from typing import List, Tuple
-
 import numpy as np
+
 from scipy.spatial import distance
 
-from .. types import Array
-
-Shape = Tuple[int, int]
-Coord = Tuple[int, int]
-AdIndex = Tuple[List[int], List[int]]
+from . types import Array, Shape, Coord
 
 
 def gaussian(grid, center, radius):
@@ -131,7 +126,7 @@ def check_bounds(shape: Shape, point: Coord) -> bool:
     return (0 <= point[0] < shape[0]) and (0 <= point[1] < shape[1])
 
 
-def direct_rect_nb(shape: Shape, point: Coord) -> AdIndex:
+def direct_rect_nb(shape: Shape, point: Coord) -> Array:
     """Return the set of direct neighbours of ``point`` given rectangular
     topology.
 
@@ -148,4 +143,3 @@ def direct_rect_nb(shape: Shape, point: Coord) -> AdIndex:
             if check_bounds(shape, (i, j)):
                 nhb.append((i, j))
     return np.asarray(nhb)
-
