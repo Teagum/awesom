@@ -8,7 +8,7 @@ from scipy.spatial import distance
 
 from apollon.io import io as aio
 
-from . types import Array, Coord, Metric, Shape, SomDims, WeightInit
+from . typealias import Array, Coord, Metric, Shape, SomDims, WeightInit
 from . import defaults
 from . import neighbors
 from . import utilities as utils

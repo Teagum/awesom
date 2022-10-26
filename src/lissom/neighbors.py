@@ -6,7 +6,7 @@ import numpy as np
 
 from scipy.spatial import distance
 
-from . types import Array, Shape, Coord
+from . typealias import Array, Shape, Coord
 
 
 def gaussian(grid, center, radius):
