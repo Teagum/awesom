@@ -1,2 +1,2 @@
 # lissom
-Python Self-organizing map framework
+Self-organizing map framework for Python
