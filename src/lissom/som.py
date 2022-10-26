@@ -7,11 +7,11 @@ from scipy.spatial import cKDTree
 from scipy.spatial import distance
 
 from apollon.io import io as aio
-from apollon.som import defaults as _defaults
 from . import neighbors as _neighbors
 from . import utilities as asu
 
 from . types import Array, Coord, Metric, Shape, SomDims, WeightInit
+from . import defaults
 
 
 class SomGrid:
@@ -318,8 +318,8 @@ class IncrementalMap(SomBase):
 
     def fit(self, train_data, verbose=False, output_weights=False):
         self._weights = self.init_weights(self.dims, train_data)
-        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, _defaults.final_eta)
-        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, _defaults.final_nhr)
+        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
+        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
 
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
@@ -353,8 +353,8 @@ class IncrementalKDTReeMap(SomBase):
     def fit(self, train_data, verbose=False):
         """Fit SOM to input data."""
         self._weights = self.init_weights(train_data, self.shape)
-        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, _defaults.final_eta)
-        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, _defaults.final_nhr)
+        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
+        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
         iter_ = range(self.n_iter)
 
         np.random.seed(10)
