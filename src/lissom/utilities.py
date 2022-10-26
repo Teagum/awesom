@@ -6,8 +6,8 @@ import itertools
 from typing import Iterable, Iterator
 
 import numpy as np
-from scipy.spatial import distance as _distance
-from scipy import stats as _stats
+from scipy.spatial import distance
+from scipy import stats
 
 from . typealias import Array
 
@@ -65,7 +65,7 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
 
 """
 def match(weights: Array, data: Array, kth, metric: str):
-    dists = _distance.cdist(weights, data, metric)
+    dists = distance.cdist(weights, data, metric)
     idx = dists.argpartition(kth, axis=0)
     min_vals = dists[min_idx]
     return (min_idx, min_vals)
@@ -106,7 +106,7 @@ def best_match(weights: Array, inp: Array, metric: str):
                'has to have one or two dimensions.')
         raise ValueError(msg)
 
-    dists = _distance.cdist(weights, inp, metric)
+    dists = distance.cdist(weights, inp, metric)
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
@@ -198,7 +198,7 @@ def sample_stm(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     n_states = int(n_states)
     n_units = n_rows * n_cols
     alpha = np.random.randint(1, 10, (n_states, n_states))
-    st_matrix = np.hstack([_stats.dirichlet(a).rvs(size=n_units)
+    st_matrix = np.hstack([stats.dirichlet(a).rvs(size=n_units)
                            for a in alpha])
     return st_matrix
 
@@ -214,7 +214,7 @@ def sample_hist(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
         Two-dimensional array in which each row is a historgram.
     """
     n_rows, n_cols, n_feats = dims
-    return _stats.dirichlet(np.ones(n_feats)).rvs(n_rows*n_cols)
+    return stats.dirichlet(np.ones(n_feats)).rvs(n_rows*n_cols)
 
 
 def distribute(bmu_idx: Iterable[int], n_units: int
