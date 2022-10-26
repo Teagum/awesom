@@ -1,12 +1,12 @@
 """
 Self-organizing map base classes
 """
+import pathlib
+import pickle
 
 import numpy as np
 from scipy.spatial import cKDTree
 from scipy.spatial import distance
-
-from apollon.io import io as aio
 
 from . typealias import Array, Coord, Metric, Shape, SomDims, WeightInit
 from . import defaults
@@ -245,7 +245,9 @@ class SomBase:
         Args:
             path: Save SOM to this path.
         """
-        aio.save_to_pickle(self, path)
+        path = pathlib.Path(path)
+        with path.open("wb") as file:
+            pickle.dump(self, file)
 
     def save_weights(self, path) -> None:
         """Save weights only.
