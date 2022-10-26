@@ -7,11 +7,11 @@ from scipy.spatial import cKDTree
 from scipy.spatial import distance
 
 from apollon.io import io as aio
-from . import utilities as asu
 
 from . types import Array, Coord, Metric, Shape, SomDims, WeightInit
 from . import defaults
 from . import neighbors
+from . import utilities as utils
 
 
 class SomGrid:
@@ -99,7 +99,7 @@ class SomBase:
             np.random.seed(seed)
 
         if isinstance(init_weights, str):
-            self.init_weights = asu.weight_initializer[init_weights]
+            self.init_weights = utils.weight_initializer[init_weights]
         elif callable(init_weights):
             self.init_weights = init_weights
         else:
@@ -179,7 +179,7 @@ class SomBase:
         Returns:
             Array of target values.
         """
-        bm_dv, _ = asu.best_match(data, self._weights, self.metric)
+        bm_dv, _ = utils.best_match(data, self._weights, self.metric)
         return target[bm_dv]
 
     def distribute(self, data: Array) -> dict[int, list[int]]:
@@ -196,7 +196,7 @@ class SomBase:
             that holds the indices of rows in ``data``, which best match this
             key.
         """
-        return asu.distribute(self.match(data), self.n_units)
+        return utils.distribute(self.match(data), self.n_units)
 
     def match_flat(self, data: Array) -> Array:
         """Return the index of the best matching unit for each vector in
@@ -208,7 +208,7 @@ class SomBase:
         Returns:
             Array of SOM unit indices.
         """
-        bmu, _ = asu.best_match(self._weights, data, self.metric)
+        bmu, _ = utils.best_match(self._weights, data, self.metric)
         return bmu
 
     def match(self, data: Array) -> Array:
@@ -236,7 +236,7 @@ class SomBase:
         Returns:
             One-dimensional array of indices.
         """
-        bmi, _ = asu.best_match(self.weights, data, self.metric)
+        bmi, _ = utils.best_match(self.weights, data, self.metric)
         return bmi
 
     def save(self, path) -> None:
@@ -318,8 +318,8 @@ class IncrementalMap(SomBase):
 
     def fit(self, train_data, verbose=False, output_weights=False):
         self._weights = self.init_weights(self.dims, train_data)
-        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
-        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
+        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
+        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
 
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
@@ -332,13 +332,13 @@ class IncrementalMap(SomBase):
                     fname = f'weights/weights_{c_iter:05}_{i:05}.npy'
                     with open(fname, 'wb') as fobj:
                         np.save(fobj, self._weights, allow_pickle=False)
-                bmu, err = asu.best_match(self.weights, fvect, self.metric)
+                bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
                 neighbors = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
                 self._weights += c_eta * neighbors * (fvect - self._weights)
 
-            _, err = asu.best_match(self.weights, train_data, self.metric)
+            _, err = utils.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
 
 
@@ -353,8 +353,8 @@ class IncrementalKDTReeMap(SomBase):
     def fit(self, train_data, verbose=False):
         """Fit SOM to input data."""
         self._weights = self.init_weights(train_data, self.shape)
-        eta_ = asu.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
-        nhr_ = asu.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
+        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
+        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
         iter_ = range(self.n_iter)
 
         np.random.seed(10)
@@ -364,7 +364,7 @@ class IncrementalKDTReeMap(SomBase):
                  .format(c_iter, np.round(c_eta, 4), np.round(c_nhr, 5)))
 
             for fvect in np.random.permutation(train_data):
-                bmu, _ = asu.best_match(self.weights, fvect, self.metric)
+                bmu, _ = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 nh_idx = self._grid.nhb_idx(np.unravel_index(*bmu, self.shape), c_nhr)
                 #dists = _distance.cdist(self._grid.pos[nh_idx], self._grid.pos[bmu])
