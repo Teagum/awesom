@@ -2,8 +2,6 @@
 Self-organizing map base classes
 """
 
-from typing import Callable, Dict, List, Optional, Tuple, Union
-
 import numpy as np
 from scipy.spatial import cKDTree
 from scipy.spatial import distance
@@ -13,8 +11,7 @@ from apollon.som import defaults as _defaults
 from . import neighbors as _neighbors
 from . import utilities as asu
 
-from . types import Array, Shape, SomDims, Coord
-
+from . types import Array, Coord, Metric, Shape, SomDims, WeightInit
 
 
 class SomGrid:
@@ -66,7 +63,7 @@ class SomGrid:
 class SomBase:
     def __init__(self, dims: SomDims, n_iter: int, eta: float,
                  nhr: float, nh_shape: str, init_weights: WeightInit,
-                 metric: Metric, seed: Optional[float] = None):
+                 metric: Metric, seed: float | None = None):
 
         self._grid = SomGrid(dims[:2])
         self.n_features = dims[2]
@@ -75,7 +72,7 @@ class SomBase:
         self.metric = metric
         self._qrr = np.zeros(n_iter)
         self._trr = np.zeros(n_iter)
-        self._weights: Optional[Array] = None
+        self._weights: Array | None = None
 
         try:
             self._neighbourhood = getattr(_neighbors, nh_shape)
@@ -109,10 +106,10 @@ class SomBase:
             msg = f'Initializer must be string or callable.'
             raise ValueError(msg)
 
-        self._dists: Optional[Array] = None
+        self._dists: Array | None = None
 
     @property
-    def dims(self) -> Tuple[int, int, int]:
+    def dims(self) -> SomDims:
         """Return the SOM dimensions."""
         return (*self._grid.shape, self.n_features)
 
@@ -185,7 +182,7 @@ class SomBase:
         bm_dv, _ = asu.best_match(data, self._weights, self.metric)
         return target[bm_dv]
 
-    def distribute(self, data: Array) -> Dict[int, List[int]]:
+    def distribute(self, data: Array) -> dict[int, list[int]]:
         """Distribute the vectors of ``data`` on the SOM.
 
         Indices of vectors n ``data`` are mapped to the index of
@@ -346,7 +343,7 @@ class IncrementalMap(SomBase):
 
 
 class IncrementalKDTReeMap(SomBase):
-    def __init__(self, dims: tuple, n_iter: int, eta: float, nhr: float,
+    def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str = 'star2', init_distr: str = 'uniform',
                  metric: str = 'euclidean', seed: int = None):
 

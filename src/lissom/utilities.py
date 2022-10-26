@@ -3,17 +3,16 @@ Utilities for self.organizing maps.
 """
 
 import itertools
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import Iterable, Iterator
 
 import numpy as np
 from scipy.spatial import distance as _distance
 from scipy import stats as _stats
 
-from apollon.types import Array, Shape, SomDims
 from apollon import tools
 
 
-def grid_iter(n_rows: int, n_cols: int) -> Iterator[Tuple[int, int]]:
+def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
     """Compute grid indices of an two-dimensional array.
 
     Args:
@@ -111,7 +110,7 @@ def best_match(weights: Array, inp: Array, metric: str):
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_pca(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
+def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     """Compute initial SOM weights by sampling from the first two principal
     components of the input data.
 
@@ -145,7 +144,7 @@ def sample_pca(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
     return weights
 
 
-def sample_rnd(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
+def sample_rnd(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     """Compute initial SOM weights by sampling uniformly from the data space.
 
     Args:
@@ -166,7 +165,7 @@ def sample_rnd(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
     return np.column_stack(weights)
 
 
-def sample_stm(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
+def sample_stm(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     """Compute initial SOM weights by sampling stochastic matrices from
     Dirichlet distribution.
 
@@ -204,7 +203,7 @@ def sample_stm(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
     return st_matrix
 
 
-def sample_hist(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
+def sample_hist(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     """Sample sum-normalized histograms.
 
     Args:
@@ -219,7 +218,7 @@ def sample_hist(dims: SomDims, data: Optional[Array] = None, **kwargs) -> Array:
 
 
 def distribute(bmu_idx: Iterable[int], n_units: int
-               ) -> Dict[int, List[int]]:
+               ) -> dict[int, list[int]]:
     """List training data matches per SOM unit.
 
     This method assumes that the ith element of ``bmu_idx`` corresponds to the
