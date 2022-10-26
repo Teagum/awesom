@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "lissom"
+name = "blossom"
 version = "0.1.0"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
