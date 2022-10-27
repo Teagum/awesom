@@ -17,7 +17,7 @@ from . import utilities as utils
 class SomGrid:
     def __init__(self, shape: Shape) -> None:
         if not all(isinstance(val, int) and val >= 1 for val in shape):
-            raise ValueError('Dimensions must be integer > 0.')
+            raise ValueError("Dimensions must be integer > 0.")
         self.shape = shape
         self.pos = np.asarray(list(np.ndindex(shape)), dtype=int)
         self.tree = cKDTree(self.pos)
@@ -77,9 +77,9 @@ class SomBase:
         try:
             self._neighbourhood = getattr(neighbors, nh_shape)
         except AttributeError:
-            raise AttributeError(f'Neighborhood shape {nh_shape} is unknown.'
-                                 'Use one `gaussian`, `mexican`, `rect`, or'
-                                 '`star`')
+            raise AttributeError(f"Neighborhood shape {nh_shape} is unknown. "
+                                 "Use one of `gaussian`, `mexican`, `rect`, or "
+                                 "`star`")
 
         if eta is None:
             self.init_eta = None
@@ -87,13 +87,13 @@ class SomBase:
             if 0 < eta <= 1.:
                 self.init_eta = eta
             else:
-                raise ValueError(f'Parameter ``eta``={self.init_eta} not in'
-                                 'range [0, 1]')
+                raise ValueError(f"Parameter ``eta``={self.init_eta} not in"
+                                 "range [0, 1]")
 
         if nhr >= 1:
             self.init_nhr = nhr
         else:
-            raise ValueError('Neighbourhood radius must be int > 0.')
+            raise ValueError("Neighbourhood radius must be int > 0.")
 
         if seed is not None:
             np.random.seed(seed)
@@ -103,7 +103,7 @@ class SomBase:
         elif callable(init_weights):
             self.init_weights = init_weights
         else:
-            msg = f'Initializer must be string or callable.'
+            msg = f"Initializer must be string or callable."
             raise ValueError(msg)
 
         self._dists: Array | None = None
@@ -284,7 +284,7 @@ class SomBase:
         Returns:
             Unified distance matrix.
         """
-        u_height = np.empty(self.n_units, dtype='float64')
+        u_height = np.empty(self.n_units, dtype="float64")
         nhd_per_unit = self._grid.nhb_idx(self._grid.pos, radius)
         for i, nhd_idx in enumerate(nhd_per_unit):
             cwv = self._weights[[i]]
@@ -303,8 +303,8 @@ class SomBase:
 
 class BatchMap(SomBase):
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = 'gaussian', init_weights: WeightInit  = 'rnd',
-                 metric: Metric = 'euclidean', seed: int = None):
+                 nh_shape: str = "gaussian", init_weights: WeightInit  = "rnd",
+                 metric: Metric = "euclidean", seed: int = None):
 
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
@@ -312,8 +312,8 @@ class BatchMap(SomBase):
 
 class IncrementalMap(SomBase):
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = 'gaussian', init_weights: WeightInit = 'rnd',
-                 metric: Metric = 'euclidean', seed: int = None):
+                 nh_shape: str = "gaussian", init_weights: WeightInit = "rnd",
+                 metric: Metric = "euclidean", seed: int = None):
 
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
@@ -326,13 +326,13 @@ class IncrementalMap(SomBase):
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
             if verbose:
-                print('iter: {:2} -- eta: {:<5} -- nh: {:<6}' \
+                print("iter: {:2} -- eta: {:<5} -- nh: {:<6}" \
                  .format(c_iter, np.round(c_eta, 4), np.round(c_nhr, 5)))
 
             for i, fvect in enumerate(np.random.permutation(train_data)):
                 if output_weights:
-                    fname = f'weights/weights_{c_iter:05}_{i:05}.npy'
-                    with open(fname, 'wb') as fobj:
+                    fname = f"weights/weights_{c_iter:05}_{i:05}.npy"
+                    with open(fname, "wb") as fobj:
                         np.save(fobj, self._weights, allow_pickle=False)
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
@@ -346,8 +346,8 @@ class IncrementalMap(SomBase):
 
 class IncrementalKDTReeMap(SomBase):
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = 'star2', init_distr: str = 'uniform',
-                 metric: str = 'euclidean', seed: int = None):
+                 nh_shape: str = "star2", init_distr: str = "uniform",
+                 metric: str = "euclidean", seed: int = None):
 
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_distr, metric,
                          seed=seed)
@@ -362,7 +362,7 @@ class IncrementalKDTReeMap(SomBase):
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(iter_, eta_, nhr_):
             if verbose:
-                print('iter: {:2} -- eta: {:<5} -- nh: {:<6}' \
+                print("iter: {:2} -- eta: {:<5} -- nh: {:<6}" \
                  .format(c_iter, np.round(c_eta, 4), np.round(c_nhr, 5)))
 
             for fvect in np.random.permutation(train_data):
@@ -377,7 +377,7 @@ class IncrementalKDTReeMap(SomBase):
             _, err = asu.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
 
-'''
+"""
     def _batch_update(self, data_set, c_nhr):
         # get bmus for vector in data_set
         bm_units, total_qE = self.get_winners(data_set)
@@ -412,7 +412,7 @@ class IncrementalKDTReeMap(SomBase):
                 asu.decrease_linear(self.init_nhr, self.n_iter)):
 
             if verbose:
-                print(c_iter, end=' ')
+                print(c_iter, end=" ")
 
             self._batch_update(data, c_nhr)
-            '''
+            """

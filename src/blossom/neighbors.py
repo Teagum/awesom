@@ -20,7 +20,7 @@ def gaussian(grid, center, radius):
         radius    Size of neighborhood.
     """
     center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, metric='sqeuclidean')
+    dists = distance.cdist(center, grid, metric="sqeuclidean")
     return np.exp(-dists/(2*radius**2)).T
 
 
@@ -35,7 +35,7 @@ def mexican(grid, center, radius):
         radius    Size of neighborhood.
     """
     center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, metric='sqeuclidean')
+    dists = distance.cdist(center, grid, metric="sqeuclidean")
     return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
 
 
@@ -53,11 +53,11 @@ def star(grid, center, radius):
     Returns:
     """
     center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, 'cityblock')
+    dists = distance.cdist(center, grid, "cityblock")
     return (dists <= radius).astype(int).T
 
 
-def neighborhood(grid, metric='sqeuclidean'):
+def neighborhood(grid, metric="sqeuclidean"):
     """Compute n-dimensional cityblock neighborhood.
 
     The cityblock neighborhood is a star-shaped area
@@ -88,7 +88,7 @@ def rect(grid, center, radius):
         Two-dimensional array of in
     """
     center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, 'chebychev')
+    dists = distance.cdist(center, grid, "chebychev")
     return (dists <= radius).astype(int).T
 
 """ NNNNNNNNNEEEEEEEEEEWWWWWW STUFFFFFFFF """

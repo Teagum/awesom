@@ -2,8 +2,8 @@
 Plotting functions for SOMs.
 """
 
-__all__ = ['cluster_by', 'component', 'hit_counts', 'qerror', 'label_target',
-           'umatrix', 'wire']
+__all__ = ["cluster_by", "component", "hit_counts", "qerror", "label_target",
+           "umatrix", "wire"]
 
 from typing import Callable, Optional, Union
 
@@ -22,10 +22,10 @@ def umatrix(ax: Axis, som, outline: bool = False, **kwargs) -> None:
         som:  SOM instance.
 
     Note:
-        Figure aspect is set to 'eqaul'.
+        Figure aspect is set to "eqaul".
     """
     props = {
-        'cmap': 'terrain',
+        'cmap': "terrain",
         'levels': 20}
     props.update(kwargs)
     _generic_contour(ax, som.umatrix(), outline, **props)
@@ -39,10 +39,10 @@ def umatrix3d(ax: Axis, som, **kwargs) -> None:
         som:  SOM instance.
 
     Note:
-        Figure aspect is set to 'eqaul'.
+        Figure aspect is set to "eqaul".
     """
     props = {
-        'cmap': 'terrain',
+        'cmap': "terrain",
         }
     props.update(kwargs)
     ax.plot_surface(*np.mgrid[:som.dx, :som.dy], som.umatrix(), **props)
@@ -58,7 +58,7 @@ def component(ax: Axis, som, comp: int, outline: bool = False,
         comp:  Component number.
     """
     props = {
-        'cmap': 'magma',
+        'cmap': "magma",
         'levels': 20,}
     props.update(kwargs)
     _generic_contour(ax, som.weights[:, comp].reshape(som.shape), outline,
@@ -76,8 +76,8 @@ def label_target(ax: Axis, som, data: Array, target: Array, **kwargs) -> None:
     """
     props = {
         'fontsize': 9,
-        'ha': 'left',
-        'va': 'bottom',
+        'ha': "left",
+        'va': "bottom",
         }
     props.update(kwargs)
 
@@ -110,7 +110,7 @@ def cluster_by(ax: Axis, som, data: Array, target: Array,
     props = {
             's': 50,
             'c': target,
-            'marker': 'o',
+            'marker': "o",
             }
     props.update(kwargs)
     bmu = som.match(data)
@@ -127,12 +127,12 @@ def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
     Args:
         ax:    Axis subplot.
         som:   SOM instance.
-        mode:  Choose either 'linear', or 'log'.
+        mode:  Choose either "linear", or "log".
     """
     props = {
         'interpolation': None,
-        'origin': 'lower',
-        'cmap': 'Greys',
+        'origin': "lower",
+        'cmap': "Greys",
         }
     props.update(kwargs)
     data = som.hit_counts.reshape(som.shape)
@@ -166,16 +166,16 @@ def wire(ax: Axis, som,
     elif isinstance(unit_size, float) or isinstance(unit_size, int):
         marker_size = np.repeat(unit_size, som.n_units)
     else:
-        msg = (f'Argument of parameter ``unit_size`` must be real scalar '
-               'or one-dimensional numpy array.')
+        msg = (f"Argument of parameter ``unit_size`` must be real scalar "
+               "or one-dimensional numpy array.")
         raise ValueError(msg)
     marker_size_bg = marker_size + marker_size / 100 * 30
 
-    bg_color: str = 'w'
-    hl_color: str = 'r'
+    bg_color: str = "w"
+    hl_color: str = "r"
 
     line_props = {
-        'color': 'k',
+        'color': "k",
         'alpha': 0.7,
         'lw': 1.0,
         'zorder': 9,
@@ -192,7 +192,7 @@ def wire(ax: Axis, som,
     marker_hl_props = {
         's': marker_size,
         'c': unit_color,
-        'alpha': line_props['alpha'],
+        'alpha': line_props["alpha"],
         }
 
     if highlight is not None:
@@ -204,26 +204,26 @@ def wire(ax: Axis, som,
     vlines = ax.plot(v_wx, v_wy, **line_props)
     hlines = ax.plot(h_wx, h_wy, **line_props)
     bgmarker = ax.scatter(v_wx, v_wy, s=marker_size_bg, c=bg_color,
-                          edgecolors='None', zorder=11)
+                          edgecolors="None", zorder=11)
     umarker = ax.scatter(v_wx, v_wy, s=marker_size, c=unit_color, alpha=alpha,
-                         edgecolors='None', zorder=12)
+                         edgecolors="None", zorder=12)
 
     font = {'fontsize': 4,
-            'va': 'bottom',
-            'ha': 'center',
+            'va': "bottom",
+            'ha': "center",
             }
 
     bbox = {'alpha': 0.7,
-            'boxstyle': 'round',
-            'edgecolor': '#aaaaaa',
-            'facecolor': '#dddddd',
+            'boxstyle': "round",
+            'edgecolor': "#aaaaaa",
+            'facecolor': "#dddddd",
             'linewidth': .5,
             }
 
     if labels is True:
         for (px, py), (ix, iy) in zip(som.weights, np.ndindex(shape)):
-            ax.text(px+1.3, py, f'({ix}, {iy})', font, bbox=bbox, zorder=13)
-    ax.set_aspect('equal')
+            ax.text(px+1.3, py, f"({ix}, {iy})", font, bbox=bbox, zorder=13)
+    ax.set_aspect("equal")
     return None
 
 
@@ -245,8 +245,8 @@ def data_2d(ax: Axis, data: Array, colors: Array,
     props = {
         'alpha': 0.2,
         'c': colors,
-        'cmap': 'plasma',
-        'edgecolors': 'None',
+        'cmap': "plasma",
+        'edgecolors': "None",
         's': 10}
     props.update(kwargs)
     aplot.outward_spines(ax)
@@ -270,5 +270,5 @@ def _generic_contour(ax: Axis, data: Array, outline: bool = False,
     _ = ax.set_xticks(range(sdy))
     _ = ax.set_yticks(range(sdx))
     if outline:
-        ax.contour(data, cmap='Greys_r', alpha=.7)
-    ax.set_aspect('equal')
+        ax.contour(data, cmap="Greys_r", alpha=.7)
+    ax.set_aspect("equal")

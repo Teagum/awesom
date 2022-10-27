@@ -42,7 +42,7 @@ def decrease_linear(start: float, step: float, stop: float = 1.0
                     ) -> Iterator[float]:
     """Linearily decrease ``start``  in ``step`` steps to ``stop``."""
     if step < 1 or not isinstance(step, int):
-        raise ValueError('Param `step` must be int >= 1.')
+        raise ValueError("Param `step` must be int >= 1.")
     elif step == 1:
         yield start
     else:
@@ -55,7 +55,7 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
                   ) -> Iterator[float]:
     """Exponentially decrease ``start``  in ``step`` steps to ``stop``."""
     if step < 1 or not isinstance(step, int):
-        raise ValueError('Param `step` must be int >= 1.')
+        raise ValueError("Param `step` must be int >= 1.")
     elif step == 1:
         yield start
     else:
@@ -90,20 +90,20 @@ def best_match(weights: Array, inp: Array, metric: str):
         Index and error of best matching units.
     """
     if weights.ndim != 2:
-        msg = (f'Array ``weights`` has {weights.ndim} dimensions, it '
-               'has to have exactly two dimensions.')
+        msg = (f"Array ``weights`` has {weights.ndim} dimensions, it "
+               "has to have exactly two dimensions.")
         raise ValueError(msg)
 
     if weights.shape[-1] != inp.shape[-1]:
-        msg = (f'Feature dimension of ``weights`` has {weights.shape[0]} '
-               'elemets, whereas ``inp`` has {inp.shape[-1]} elemets. '
-               'However, both dimensions have to match exactly.')
+        msg = (f"Feature dimension of ``weights`` has {weights.shape[0]} "
+               "elemets, whereas ``inp`` has {inp.shape[-1]} elemets. "
+               "However, both dimensions have to match exactly.")
         raise ValueError(msg)
 
     inp = np.atleast_2d(inp)
     if inp.ndim > 2:
-        msg = (f'Array ``inp`` has {weights.ndim} dimensions, it '
-               'has to have one or two dimensions.')
+        msg = (f"Array ``inp`` has {weights.ndim} dimensions, it "
+               "has to have one or two dimensions.")
         raise ValueError(msg)
 
     dists = distance.cdist(weights, inp, metric)
@@ -132,7 +132,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     vals, vects, trans_data = pca(data, 2)
     data_limits = np.column_stack((trans_data.min(axis=0),
                                    trans_data.max(axis=0)))
-    if 'adapt' in kwargs and kwargs['adapt'] is True:
+    if "adapt" in kwargs and kwargs['adapt'] is True:
         shape = sorted((n_rows, n_cols), reverse=True)
     else:
         shape = (n_rows, n_cols)
@@ -191,8 +191,8 @@ def sample_stm(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     n_rows, n_cols, n_feats = dims
     n_states = np.sqrt(n_feats)
     if bool(n_states - int(n_states)):
-        msg = (f'Weight vector with {n_feats} elements is not '
-               'reshapeable to square matrix.')
+        msg = (f"Weight vector with {n_feats} elements is not "
+               "reshapeable to square matrix.")
         raise ValueError(msg)
 
     n_states = int(n_states)
