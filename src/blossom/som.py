@@ -201,12 +201,12 @@ class SomBase:
             pickle.dump(self, file)
 
     def save_weights(self, path) -> None:
-        """Save weights only.
+        """Save weights only as a portable `.npy` file
 
         Args:
             path:  File path
         """
-        aio.save_to_npy(self._weights, path)
+        np.save(path, self.weights, allow_pickle=False)
 
     def transform(self, data: Array) -> Array:
         """Transform each item in ``data`` to feature space.
