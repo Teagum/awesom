@@ -11,7 +11,7 @@ from . import defaults
 from . import grid
 from . import neighbors
 from . import utilities as utils
-from . typealias import Array, Metric, Shape, SomDims, WeightInit
+from . typealias import Array, Metric, Shape, SomDims, WeightInit, FilePath
 
 
 class SomBase:
@@ -190,8 +190,8 @@ class SomBase:
         bmi, _ = utils.best_match(self.weights, data, self.metric)
         return bmi
 
-    def save(self, path) -> None:
-        """Save som object to file using pickle.
+    def save(self, path: FilePath) -> None:
+        """Save SOM object to pickle file
 
         Args:
             path: Save SOM to this path.
@@ -200,7 +200,7 @@ class SomBase:
         with path.open("wb") as file:
             pickle.dump(self, file)
 
-    def save_weights(self, path) -> None:
+    def save_weights(self, path: FilePath) -> None:
         """Save weights only as a portable `.npy` file
 
         Args:
