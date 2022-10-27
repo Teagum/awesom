@@ -5,59 +5,13 @@ import pathlib
 import pickle
 
 import numpy as np
-from scipy.spatial import cKDTree
 from scipy.spatial import distance
 
-from . typealias import Array, Coord, Metric, Shape, SomDims, WeightInit
 from . import defaults
+from . import grid
 from . import neighbors
 from . import utilities as utils
-
-
-class SomGrid:
-    def __init__(self, shape: Shape) -> None:
-        if not all(isinstance(val, int) and val >= 1 for val in shape):
-            raise ValueError("Dimensions must be integer > 0.")
-        self.shape = shape
-        self.pos = np.asarray(list(np.ndindex(shape)), dtype=int)
-        self.tree = cKDTree(self.pos)
-        self.rows, self.cols = np.indices(shape)
-
-    def nhb_idx(self, point: Coord, radius: float) -> Array:
-        """Compute the neighbourhood within ``radius`` around ``point``.
-
-        Args:
-            point:   Coordinate in a two-dimensional array.
-            radius:  Lenght of radius.
-
-        Returns:
-            Array of indices of neighbours.
-        """
-        return np.asarray(self.tree.query_ball_point(point, radius, np.inf))
-
-    def nhb(self, point: Coord, radius: float) -> Array:
-        """Compute neighbourhood within ``radius`` around ``pouint``.
-
-        Args:
-            point:   Coordinate in a two-dimensional array.
-            radius:  Lenght of radius.
-
-        Returns:
-            Array of positions of neighbours.
-        """
-        idx = self.nhb_idx(point, radius)
-        return self.pos[idx]
-
-    def __iter__(self):
-        for row, col in zip(self.rows.flat, self.cols.flat):
-            yield row, col
-
-    def rc(self):
-        return iter(self)
-
-    def cr(self):
-        for row, col in zip(self.rows.flat, self.cols.flat):
-            yield col, row
+from . typealias import Array, Metric, Shape, SomDims, WeightInit
 
 
 class SomBase:
@@ -65,7 +19,7 @@ class SomBase:
                  nhr: float, nh_shape: str, init_weights: WeightInit,
                  metric: Metric, seed: float | None = None):
 
-        self._grid = SomGrid(dims[:2])
+        self._grid = grid.SomGrid(dims[:2])
         self.n_features = dims[2]
         self._hit_counts = np.zeros(self.n_units)
         self.n_iter = n_iter
@@ -81,14 +35,11 @@ class SomBase:
                                  "Use one of `gaussian`, `mexican`, `rect`, or "
                                  "`star`")
 
-        if eta is None:
-            self.init_eta = None
+        if 0 < eta <= 1.:
+            self.init_eta = eta
         else:
-            if 0 < eta <= 1.:
-                self.init_eta = eta
-            else:
-                raise ValueError(f"Parameter ``eta``={self.init_eta} not in"
-                                 "range [0, 1]")
+            raise ValueError(f"Parameter ``eta``={self.init_eta} not in"
+                             "range [0, 1]")
 
         if nhr >= 1:
             self.init_nhr = nhr
