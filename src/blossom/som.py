@@ -53,7 +53,7 @@ class SomGrid:
             yield row, col
 
     def rc(self):
-        return self.__iter__()
+        return iter(self)
 
     def cr(self):
         for row, col in zip(self.rows.flat, self.cols.flat):
