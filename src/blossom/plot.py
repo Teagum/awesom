@@ -163,7 +163,7 @@ def wire(ax: Axis, som,
     """
     if isinstance(unit_size, np.ndarray):
         marker_size = tools.scale(unit_size, 10, 110)
-    elif isinstance(unit_size, float) or isinstance(unit_size, int):
+    elif isinstance(unit_size, (int, float)):
         marker_size = np.repeat(unit_size, som.n_units)
     else:
         msg = (f"Argument of parameter ``unit_size`` must be real scalar "
