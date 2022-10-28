@@ -9,9 +9,8 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 
-from apollon.types import Array, Axis
-
 from . import utilities as utils
+from . typealias import Array, Axis
 
 
 def umatrix(ax: Axis, som, outline: bool = False, **kwargs) -> None:
