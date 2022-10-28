@@ -9,9 +9,10 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 
-from apollon import tools
 from apollon import aplot
 from apollon.types import Array, Axis
+
+from . import utilities as utils
 
 
 def umatrix(ax: Axis, som, outline: bool = False, **kwargs) -> None:
@@ -162,7 +163,7 @@ def wire(ax: Axis, som,
         vlines, hlines, bgmarker, umarker
     """
     if isinstance(unit_size, np.ndarray):
-        marker_size = tools.scale(unit_size, 10, 110)
+        marker_size = utils.scale(unit_size, 10, 110)
     elif isinstance(unit_size, (int, float)):
         marker_size = np.repeat(unit_size, som.n_units)
     else:
