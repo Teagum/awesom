@@ -9,7 +9,6 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 
-from apollon import aplot
 from apollon.types import Array, Axis
 
 from . import utilities as utils
@@ -250,7 +249,6 @@ def data_2d(ax: Axis, data: Array, colors: Array,
         'edgecolors': "None",
         's': 10}
     props.update(kwargs)
-    aplot.outward_spines(ax)
     _ = ax.scatter(*data.T, **props)
 
 
