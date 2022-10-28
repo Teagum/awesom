@@ -264,6 +264,27 @@ def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
     return vals, vects, data_centered @ vects.T
 
 
+def scale(arr: Array, new_min: int = 0, new_max: int = 1, axis: int = -1
+          ) -> Array:
+    """Scale ``arr`` between ``new_min`` and ``new_max``
+
+    Args:
+        arr:        Array to be scaled.
+        new_min:    Lower bound.
+        new_max:    Upper bound.
+
+    Return:
+        One-dimensional array of transformed values.
+    """
+    xmax = arr.max(axis=axis, keepdims=True)
+    xmin = arr.min(axis=axis, keepdims=True)
+
+    fact = (arr-xmin) / (xmax - xmin)
+    out = fact * (new_max - new_min) + new_min
+
+    return out
+
+
 weight_initializer = {
     'rnd': sample_rnd,
     'stm': sample_stm,
