@@ -166,7 +166,7 @@ def wire(ax: Axis, som,
     elif isinstance(unit_size, (int, float)):
         marker_size = np.repeat(unit_size, som.n_units)
     else:
-        msg = (f"Argument of parameter ``unit_size`` must be real scalar "
+        msg = ("Argument of parameter ``unit_size`` must be real scalar "
                "or one-dimensional numpy array.")
         raise ValueError(msg)
     marker_size_bg = marker_size + marker_size / 100 * 30
