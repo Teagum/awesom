@@ -47,8 +47,8 @@ def decrease_linear(start: float, step: float, stop: float = 1.0
         yield start
     else:
         coef = (stop - start) / (step-1)
-        for x in range(step):
-            yield coef * x + start
+        for stp in range(step):
+            yield coef * stp + start
 
 
 def decrease_expo(start: float, step: float, stop: float = 1.0
