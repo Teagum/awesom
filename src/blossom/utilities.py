@@ -119,7 +119,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
         Array of SOM weights.
     """
     n_rows, n_cols, n_feats = dims
-    n_units = n_rows * n_cols
+
     if data is None:
         data = np.random.randint(-100, 100, (300, n_feats))
     vals, vects, trans_data = pca(data, 2)
