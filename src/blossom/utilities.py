@@ -43,7 +43,7 @@ def decrease_linear(start: float, step: float, stop: float = 1.0
     """Linearily decrease ``start``  in ``step`` steps to ``stop``."""
     if step < 1 or not isinstance(step, int):
         raise ValueError("Param `step` must be int >= 1.")
-    elif step == 1:
+    if step == 1:
         yield start
     else:
         a = (stop - start) / (step-1)
