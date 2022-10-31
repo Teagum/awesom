@@ -46,7 +46,7 @@ def decrease_linear(start: float, step: float, stop: float = 1.0
     if step == 1:
         yield start
     else:
-        coef = (stop - start) / (step-1)
+        coef = (stop - start) / (step - 1)
         for stp in range(step):
             yield coef * stp + start
 
@@ -59,7 +59,7 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
     elif step == 1:
         yield start
     else:
-        b = np.log(stop / start) / (step-1)
+        b = np.log(stop / start) / (step - 1)
         for x in range(step):
             yield start * np.exp(b*x)
 
