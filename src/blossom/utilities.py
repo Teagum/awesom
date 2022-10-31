@@ -122,7 +122,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
 
     if data is None:
         data = np.random.randint(-100, 100, (300, n_feats))
-    vals, vects, trans_data = pca(data, 2)
+    _, vects, trans_data = pca(data, 2)
     data_limits = np.column_stack((trans_data.min(axis=0),
                                    trans_data.max(axis=0)))
     if "adapt" in kwargs and kwargs['adapt'] is True:
