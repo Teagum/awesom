@@ -60,8 +60,8 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
         yield start
     else:
         coef = np.log(stop / start) / (step - 1)
-        for x in range(step):
-            yield start * np.exp(coef*x)
+        for stp in range(step):
+            yield start * np.exp(coef*stp)
 
 """
 def match(weights: Array, data: Array, kth, metric: str):
