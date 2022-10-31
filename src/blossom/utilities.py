@@ -228,7 +228,7 @@ def distribute(bmu_idx: Iterable[int], n_units: int
         The corresponding value is a list of indices of those training data
         vectors that have been mapped to this unit.
     """
-    unit_matches = {i:[] for i in range(n_units)}
+    unit_matches: dict[int, list[int]] = {i: [] for i in range(n_units)}
     for data_idx, bmu in enumerate(bmu_idx):
         unit_matches[bmu].append(data_idx)
     return unit_matches
