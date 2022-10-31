@@ -63,13 +63,6 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
         for stp in range(step):
             yield start * np.exp(coef*stp)
 
-"""
-def match(weights: Array, data: Array, kth, metric: str):
-    dists = distance.cdist(weights, data, metric)
-    idx = dists.argpartition(kth, axis=0)
-    min_vals = dists[min_idx]
-    return (min_idx, min_vals)
-"""
 
 def best_match(weights: Array, inp: Array, metric: str):
     """Compute the best matching unit of ``weights`` for each
