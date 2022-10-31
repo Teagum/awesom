@@ -56,7 +56,7 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
     """Exponentially decrease ``start``  in ``step`` steps to ``stop``."""
     if step < 1 or not isinstance(step, int):
         raise ValueError("Param `step` must be int >= 1.")
-    elif step == 1:
+    if step == 1:
         yield start
     else:
         b = np.log(stop / start) / (step - 1)
