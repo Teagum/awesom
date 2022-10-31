@@ -126,7 +126,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     data_limits = np.column_stack((trans_data.min(axis=0),
                                    trans_data.max(axis=0)))
     if "adapt" in kwargs and kwargs['adapt'] is True:
-        shape = sorted((n_rows, n_cols), reverse=True)
+        shape = tuple(sorted((n_rows, n_cols), reverse=True))
     else:
         shape = (n_rows, n_cols)
     dim_x = np.linspace(*data_limits[0], shape[0])
