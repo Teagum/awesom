@@ -2,9 +2,6 @@
 Plotting functions for SOMs.
 """
 
-__all__ = ["cluster_by", "component", "hit_counts", "qerror", "label_target",
-           "umatrix", "wire"]
-
 from typing import Callable, Optional, Union
 
 import numpy as np
