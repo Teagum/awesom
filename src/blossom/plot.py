@@ -195,7 +195,7 @@ def wire(ax: Axis, som,
     if highlight is not None:
         bg_color = np.where(highlight, hl_color, bg_color)
 
-    rsw = som.weights.reshape(som.shape, 2)
+    rsw = som.weights.reshape(*som.shape, 2)
     v_wx, v_wy = rsw.T
     h_wx, h_wy = np.rollaxis(rsw, 1).T
     vlines = ax.plot(v_wx, v_wy, **line_props)
