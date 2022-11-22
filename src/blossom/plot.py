@@ -141,6 +141,7 @@ def wire(ax: Axis, som,
          unit_size: Union[int, float, Array] = 100.0,
          line_width: Union[int, float] = 1.0,
          highlight: Optional[Array] = None, labels: bool = False,
+         unit_color: str = 'k',
          **kwargs) -> None:
     """Plot the weight vectors of a SOM with two-dimensional feature space.
 
