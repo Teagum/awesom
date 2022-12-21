@@ -22,6 +22,12 @@ ipykernel = "^6.16.2"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+
 [[tool.mypy.overrides]]
 module = "scipy.*"
 ignore_missing_imports = true
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "t", "x", "y", "_", "ax", "ix", "iy"]
