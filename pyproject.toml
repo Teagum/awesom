@@ -34,7 +34,10 @@ module = "matplotlib.*"
 ignore_missing_imports = true
 
 [tool.pylint.basic]
-good-names = ["i", "j", "k", "t", "x", "y", "_", "ax", "ix", "iy"]
+good-names = ["i", "j", "k", "t", "x", "y", "_", "ax", "dx", "dy", "dw", "ix", "iy"]
 
 [tool.pylint.typecheck]
 ignored-argument-names = "_.*|data"
+
+[tool.pylint.design]
+max-locals = 20
