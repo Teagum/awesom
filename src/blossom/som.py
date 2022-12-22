@@ -18,6 +18,8 @@ from . typealias import Array, Metric, Shape, SomDims, WeightInit, FilePath
 
 
 class SomBase:
+    """Self-organizing map base class
+    """
     def __init__(self, dims: SomDims, n_iter: int, eta: float,
                  nhr: float, nh_shape: str, init_weights: WeightInit,
                  metric: Metric, seed: float | None = None):
@@ -268,6 +270,10 @@ class SomBase:
 
 
 class BatchMap(SomBase):
+    """Self-organizing map with batch training
+
+    The batch training updates the weight vectors once for all input vectors.
+    """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str = "gaussian", init_weights: WeightInit  = "rnd",
                  metric: Metric = "euclidean", seed: int = None):
@@ -277,6 +283,11 @@ class BatchMap(SomBase):
 
 
 class IncrementalMap(SomBase):
+    """Self-organizing map with online learning algorithm
+
+    The incremental, or online training updates the weight vectors for each
+    input vector.
+    """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str = "gaussian", init_weights: WeightInit = "rnd",
                  metric: Metric = "euclidean", seed: int = None):
@@ -285,6 +296,11 @@ class IncrementalMap(SomBase):
                          seed=seed)
 
     def fit(self, train_data, verbose=False, output_weights=False):
+        """Fit the SOM to the ``training_data``
+
+        The method first initializes the weight vectors and then starts
+        training.
+        """
         self._weights = self.init_weights(self.dims, train_data)
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
