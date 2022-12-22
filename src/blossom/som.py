@@ -130,6 +130,8 @@ class SomBase:
         Returns:
             Array of target values.
         """
+        if self._weights is None:
+            raise ValueError("Weights not initialized")
         bm_dv, _ = utils.best_match(data, self._weights, self.metric)
         return target[bm_dv]
 
@@ -159,6 +161,8 @@ class SomBase:
         Returns:
             Array of SOM unit indices.
         """
+        if self._weights is None:
+            raise ValueError("Weights not initialized")
         bmu, _ = utils.best_match(self._weights, data, self.metric)
         return bmu
 
@@ -187,7 +191,9 @@ class SomBase:
         Returns:
             One-dimensional array of indices.
         """
-        bmi, _ = utils.best_match(self.weights, data, self.metric)
+        if self._weights is None:
+            raise ValueError("Weights not initialized")
+        bmi, _ = utils.best_match(self._weights, data, self.metric)
         return bmi
 
     def save(self, path: FilePath) -> None:
@@ -206,7 +212,9 @@ class SomBase:
         Args:
             path:  File path
         """
-        np.save(path, self.weights, allow_pickle=False)
+        if self._weights is None:
+            raise ValueError("Weights not initialized")
+        np.save(path, self._weights, allow_pickle=False)
 
     def transform(self, data: Array) -> Array:
         """Transform each item in ``data`` to feature space.
@@ -220,7 +228,9 @@ class SomBase:
             Position of each data item in the feature space.
         """
         bmi = self.predict(data)
-        return self.weights[bmi]
+        if self._weights is None:
+            raise ValueError("Weights not initialized")
+        return self._weights[bmi]
 
 
     def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True):
