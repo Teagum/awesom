@@ -92,11 +92,6 @@ def rect(grid, center, radius):
     return (dists <= radius).astype(int).T
 
 
-def gauss_kern(nhb, radius):
-    """Simple Gauss kernel"""
-    return np.exp(-nhb/(radius))
-
-
 def check_bounds(shape: Shape, point: Coord) -> bool:
     """Return ``True`` if ``point`` is valid index in ``shape``.
 
