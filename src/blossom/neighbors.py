@@ -91,26 +91,10 @@ def rect(grid, center, radius):
     dists = distance.cdist(center, grid, "chebychev")
     return (dists <= radius).astype(int).T
 
-""" NNNNNNNNNEEEEEEEEEEWWWWWW STUFFFFFFFF """
-def gauss_kern(nhb, r):
-    return np.exp(-nhb/(r))
 
-
-def is_neighbour(cra: Array, crb: Array, grid: Array, metric: str) -> Array:
-    """Compute neighbourship between each coordinate in ``units_a`` abd
-    ``units_b`` on ``grid``.
-
-    Args:
-        cra:     (n x 2) array of grid coordinates.
-        crb:     (n x 2) array of grid coordinates.
-        grid:    SOM grid array.
-        metric:  Name of distance metric function.
-
-    Returns:
-        One-dimensional boolean array. ``True`` in position n means that the
-        points ``cra[n]`` and ``crb[n]`` are direct neighbours on ``grid``
-        regarding ``metric``.
-    """
+def gauss_kern(nhb, radius):
+    """Simple Gauss kernel"""
+    return np.exp(-nhb/(radius))
 
 
 def check_bounds(shape: Shape, point: Coord) -> bool:
