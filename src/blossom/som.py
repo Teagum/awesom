@@ -35,10 +35,10 @@ class SomBase:
 
         try:
             self._neighbourhood = getattr(neighbors, nh_shape)
-        except AttributeError:
+        except AttributeError as err:
             raise AttributeError(f"Neighborhood shape {nh_shape} is unknown. "
                                  "Use one of `gaussian`, `mexican`, `rect`, or "
-                                 "`star`")
+                                 "`star`") from err
 
         if 0 < eta <= 1.:
             self.init_eta = eta
@@ -59,7 +59,7 @@ class SomBase:
         elif callable(init_weights):
             self.init_weights = init_weights
         else:
-            msg = f"Initializer must be string or callable."
+            msg = "Initializer must be string or callable."
             raise ValueError(msg)
 
         self._dists: Array | None = None
@@ -237,7 +237,6 @@ class SomBase:
             raise ValueError("Weights not initialized")
         return self._weights[bmi]
 
-
     def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True):
         """Compute U-matrix of SOM instance.
 
@@ -308,8 +307,8 @@ class IncrementalMap(SomBase):
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
             if verbose:
-                print("iter: {:2} -- eta: {:<5} -- nh: {:<6}" \
-                 .format(c_iter, np.round(c_eta, 4), np.round(c_nhr, 5)))
+                print(f"iter: {c_iter:2} -- eta: {np.round(c_eta, 4):<5} -- "
+                      f"nh: {np.round(c_nhr, 5):<6}")
 
             for i, fvect in enumerate(np.random.permutation(train_data)):
                 if output_weights:
