@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial import distance
 from scipy import stats
 
-from . typealias import Array, SomDims
+from . typealias import Array, Metric, SomDims
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
@@ -64,7 +64,8 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
             yield start * np.exp(coef*stp)
 
 
-def best_match(weights: Array, inp: Array, metric: str):
+def best_match(weights: Array, inp: Array, metric: Metric
+               ) -> tuple[Array, Array]:
     """Compute the best matching unit of ``weights`` for each
     element in ``inp``.
 
