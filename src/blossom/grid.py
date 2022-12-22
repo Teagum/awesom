@@ -1,10 +1,15 @@
+"""
+Grid for Self-organizing maps
+"""
 import numpy as np
 from scipy.spatial import cKDTree
 
-from . typealias import Array, Coord, Shape
+from . typealias import Array, Shape
 
 
 class SomGrid:
+    """Rectangular SOM grid
+    """
     def __init__(self, shape: Shape) -> None:
         if not all(isinstance(val, int) and val >= 1 for val in shape):
             raise ValueError("Dimensions must be integer > 0.")
