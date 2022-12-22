@@ -246,7 +246,7 @@ class SomBase:
             Unified distance matrix.
         """
         u_height = np.empty(self.n_units, dtype="float64")
-        nhd_per_unit = self._grid.nhb_idx(self._grid.pos, radius)
+        nhd_per_unit = self._grid.nhb_idx(radius)
         for i, nhd_idx in enumerate(nhd_per_unit):
             cwv = self._weights[[i]]
             nhd = self._weights[nhd_idx]
@@ -329,7 +329,7 @@ class IncrementalKDTReeMap(SomBase):
             for fvect in np.random.permutation(train_data):
                 bmu, _ = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
-                nh_idx = self._grid.nhb_idx(np.unravel_index(*bmu, self.shape), c_nhr)
+                nh_idx = self._grid.nhb_idx(c_nhr, np.unravel_index(*bmu, self.shape))
                 #dists = _distance.cdist(self._grid.pos[nh_idx], self._grid.pos[bmu])
                 dists = np.ones(nh_idx.shape[0])
                 kern = neighbors.gauss_kern(dists.ravel(), c_nhr) * c_eta
