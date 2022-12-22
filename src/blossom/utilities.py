@@ -123,14 +123,14 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     if data is None:
         data = np.random.randint(-100, 100, (300, n_feats))
     _, vects, trans_data = pca(data, 2)
-    data_limits = np.column_stack((trans_data.min(axis=0),
-                                   trans_data.max(axis=0)))
+    data_min = trans_data.min(axis=0)
+    data_max = trans_data.max(axis=0)
     if "adapt" in kwargs and kwargs['adapt'] is True:
         shape = tuple(sorted((n_rows, n_cols), reverse=True))
     else:
         shape = (n_rows, n_cols)
-    dim_x = np.linspace(*data_limits[0], shape[0])
-    dim_y = np.linspace(*data_limits[1], shape[1])
+    dim_x = np.linspace(data_min[0], data_max[0], shape[0])
+    dim_y = np.linspace(data_min[1], data_max[1], shape[1])
     grid_x, grid_y = np.meshgrid(dim_x, dim_y)
     points = np.vstack((grid_x.ravel(), grid_y.ravel()))
     weights = points.T @ vects + data.mean(axis=0)
@@ -154,7 +154,8 @@ def sample_rnd(dims: SomDims, data: Array | None = None) -> Array:
     else:
         data_limits = np.random.randint(-10, 10, (n_feats, 2))
         data_limits.sort()
-    weights = [np.random.uniform(*lim, n_units) for lim in data_limits]
+    weights = [np.random.uniform(dmin, dmax, n_units)
+               for (dmin, dmax) in data_limits]
     return np.column_stack(weights)
 
 
