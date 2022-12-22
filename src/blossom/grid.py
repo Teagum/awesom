@@ -58,11 +58,3 @@ class SomGrid:
     def __iter__(self):
         for row, col in zip(self.rows.flat, self.cols.flat):
             yield row, col
-
-    def rc(self):
-        return iter(self)
-
-    def cr(self):
-        for row, col in zip(self.rows.flat, self.cols.flat):
-            yield col, row
-
