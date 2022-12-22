@@ -29,5 +29,9 @@ plugins = "numpy.typing.mypy_plugin"
 module = "scipy.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+ignore_missing_imports = true
+
 [tool.pylint.basic]
 good-names = ["i", "j", "k", "t", "x", "y", "_", "ax", "ix", "iy"]
