@@ -9,7 +9,7 @@ from scipy.spatial import distance
 from . typealias import Array, Shape, Coord
 
 
-def gaussian(grid, center, radius):
+def gaussian(grid, center, radius: float) -> Array:
     """Compute n-dimensional Gaussian neighbourhood.
 
     Gaussian neighborhood smoothes the array.
@@ -24,7 +24,7 @@ def gaussian(grid, center, radius):
     return np.exp(-dists/(2*radius**2)).T
 
 
-def mexican(grid, center, radius):
+def mexican(grid, center, radius: float) -> Array:
     """Compute n-dimensional Mexcican hat neighbourhood.
 
     Mexican hat neighborhood smoothes the array.
@@ -39,7 +39,7 @@ def mexican(grid, center, radius):
     return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
 
 
-def star(grid, center, radius):
+def star(grid, center, radius: float) -> Array:
     """Compute n-dimensional cityblock neighborhood.
 
     The cityblock neighborhood is a star-shaped area
@@ -57,7 +57,7 @@ def star(grid, center, radius):
     return (dists <= radius).astype(int).T
 
 
-def neighborhood(grid, metric="sqeuclidean"):
+def neighborhood(grid, metric: str = "sqeuclidean") -> Array:
     """Compute n-dimensional cityblock neighborhood.
 
     The cityblock neighborhood is a star-shaped area
@@ -73,7 +73,7 @@ def neighborhood(grid, metric="sqeuclidean"):
     return distance.squareform(distance.pdist(grid, metric))
 
 
-def rect(grid, center, radius):
+def rect(grid, center, radius: float) -> Array:
     """Compute n-dimensional Chebychev neighborhood.
 
     The Chebychev neighborhood is a square-shaped area
@@ -90,27 +90,6 @@ def rect(grid, center, radius):
     center = np.atleast_2d(center)
     dists = distance.cdist(center, grid, "chebychev")
     return (dists <= radius).astype(int).T
-
-""" NNNNNNNNNEEEEEEEEEEWWWWWW STUFFFFFFFF """
-def gauss_kern(nhb, r):
-    return np.exp(-nhb/(r))
-
-
-def is_neighbour(cra: Array, crb: Array, grid: Array, metric: str) -> Array:
-    """Compute neighbourship between each coordinate in ``units_a`` abd
-    ``units_b`` on ``grid``.
-
-    Args:
-        cra:     (n x 2) array of grid coordinates.
-        crb:     (n x 2) array of grid coordinates.
-        grid:    SOM grid array.
-        metric:  Name of distance metric function.
-
-    Returns:
-        One-dimensional boolean array. ``True`` in position n means that the
-        points ``cra[n]`` and ``crb[n]`` are direct neighbours on ``grid``
-        regarding ``metric``.
-    """
 
 
 def check_bounds(shape: Shape, point: Coord) -> bool:
