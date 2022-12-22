@@ -1,6 +1,9 @@
 """
 Self-organizing map base classes
 """
+
+# pylint: disable = R0904, R0902, R0913
+
 import pathlib
 import pickle
 
