@@ -1,3 +1,6 @@
+[![mypy](https://github.com/Teagum/blossom/actions/workflows/mypy.yml/badge.svg)](https://github.com/Teagum/blossom/actions/workflows/mypy.yml)
+[![pylint](https://github.com/Teagum/blossom/actions/workflows/pylint.yml/badge.svg)](https://github.com/Teagum/blossom/actions/workflows/pylint.yml)
+
 # Blossom
 Self-organizing map framework for Python
 
