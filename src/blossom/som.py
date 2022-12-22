@@ -245,6 +245,8 @@ class SomBase:
         Returns:
             Unified distance matrix.
         """
+        if self._weights is None:
+            raise ValueError("Wrights not initialized")
         u_height = np.empty(self.n_units, dtype="float64")
         nhd_per_unit = self._grid.nhb_idx(radius)
         for i, nhd_idx in enumerate(nhd_per_unit):
