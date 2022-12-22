@@ -137,7 +137,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     return weights
 
 
-def sample_rnd(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
+def sample_rnd(dims: SomDims, data: Array | None = None) -> Array:
     """Compute initial SOM weights by sampling uniformly from the data space.
 
     Args:
@@ -158,7 +158,7 @@ def sample_rnd(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     return np.column_stack(weights)
 
 
-def sample_stm(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
+def sample_stm(dims: SomDims, data: Array | None = None) -> Array:
     """Compute initial SOM weights by sampling stochastic matrices from
     Dirichlet distribution.
 
@@ -196,7 +196,7 @@ def sample_stm(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
     return st_matrix
 
 
-def sample_hist(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
+def sample_hist(dims: SomDims, data: Array | None = None) -> Array:
     """Sample sum-normalized histograms.
 
     Args:
