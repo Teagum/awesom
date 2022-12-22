@@ -90,17 +90,17 @@ class SomBase:
         return self._grid.shape
 
     @property
-    def grid(self) -> Array:
+    def grid(self) -> grid.SomGrid:
         """Return the grid."""
         return self._grid
 
     @property
-    def dists(self) -> Array:
+    def dists(self) -> Array | None:
         """Return the distance matrix of the grid points."""
         return self._dists
 
     @property
-    def weights(self) -> Array:
+    def weights(self) -> Array | None:
         """Return the weight vectors."""
         return self._weights
 
