@@ -318,42 +318,8 @@ class IncrementalMap(SomBase):
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
-                neighbors = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
-                self._weights += c_eta * neighbors * (fvect - self._weights)
+                neighbourhood = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
+                self._weights += c_eta * neighbourhood * (fvect - self._weights)
 
             _, err = utils.best_match(self.weights, train_data, self.metric)
-            self._qrr[c_iter] = err.sum() / train_data.shape[0]
-
-
-class IncrementalKDTReeMap(SomBase):
-    def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = "star2", init_distr: str = "uniform",
-                 metric: str = "euclidean", seed: int = None):
-
-        super().__init__(dims, n_iter, eta, nhr, nh_shape, init_distr, metric,
-                         seed=seed)
-
-    def fit(self, train_data, verbose=False):
-        """Fit SOM to input data."""
-        self._weights = self.init_weights(train_data, self.shape)
-        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
-        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
-        iter_ = range(self.n_iter)
-
-        np.random.seed(10)
-        for (c_iter, c_eta, c_nhr) in zip(iter_, eta_, nhr_):
-            if verbose:
-                print("iter: {:2} -- eta: {:<5} -- nh: {:<6}" \
-                 .format(c_iter, np.round(c_eta, 4), np.round(c_nhr, 5)))
-
-            for fvect in np.random.permutation(train_data):
-                bmu, _ = utils.best_match(self.weights, fvect, self.metric)
-                self._hit_counts[bmu] += 1
-                nh_idx = self._grid.nhb_idx(c_nhr, np.unravel_index(*bmu, self.shape))
-                #dists = _distance.cdist(self._grid.pos[nh_idx], self._grid.pos[bmu])
-                dists = np.ones(nh_idx.shape[0])
-                kern = neighbors.gauss_kern(dists.ravel(), c_nhr) * c_eta
-                self._weights[nh_idx] += ((fvect - self._weights[nh_idx]) * kern[:, None])
-
-            _, err = asu.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
