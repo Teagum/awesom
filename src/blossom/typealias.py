@@ -4,12 +4,12 @@ Type aliases
 import pathlib
 from typing import Callable, Union
 
-import matplotlib as mpl
+from matplotlib import axes
 import numpy as np
 
 
 Array = np.ndarray
-Axis = mpl.axes.Axes
+Axis = axes.Axes
 
 Coord = tuple[int, int]
 Shape = tuple[int, int]
