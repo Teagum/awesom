@@ -283,8 +283,8 @@ class IncrementalMap(SomBase):
 
     def fit(self, train_data, verbose=False, output_weights=False):
         self._weights = self.init_weights(self.dims, train_data)
-        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
-        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
+        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
+        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
 
         np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
@@ -318,8 +318,8 @@ class IncrementalKDTReeMap(SomBase):
     def fit(self, train_data, verbose=False):
         """Fit SOM to input data."""
         self._weights = self.init_weights(train_data, self.shape)
-        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.final_eta)
-        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.final_nhr)
+        eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
+        nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
         iter_ = range(self.n_iter)
 
         np.random.seed(10)
