@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blossom"
-version = "0.1.0"
+version = "0.1.1"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
 license = "BSD-3"
