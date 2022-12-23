@@ -275,7 +275,7 @@ class BatchMap(SomBase):
     """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str = "gaussian", init_weights: WeightInit  = "rnd",
-                 metric: Metric = "euclidean", seed: int = None):
+                 metric: Metric = "euclidean", seed: int | None = None):
 
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
@@ -289,7 +289,7 @@ class IncrementalMap(SomBase):
     """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str = "gaussian", init_weights: WeightInit = "rnd",
-                 metric: Metric = "euclidean", seed: int = None):
+                 metric: Metric = "euclidean", seed: int | None = None):
 
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
