@@ -12,11 +12,18 @@ numpy = "^1.23.4"
 scipy = "^1.9.3"
 matplotlib = "^3.6.1"
 
+[tool.poetry.group.development]
+optional = true
 
 [tool.poetry.group.development.dependencies]
-pylint = "^2.15.5"
-mypy = "^0.982"
-ipykernel = "^6.16.2"
+mypy = "^0.991"
+pylint = "^2.15.9"
+
+[tool.poetry.group.notebook]
+optional = true
+
+[tool.poetry.group.notebook.dependencies]
+ipykernel = "^6.19.4"
 
 [build-system]
 requires = ["poetry-core"]
