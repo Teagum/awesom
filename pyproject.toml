@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blossom"
-version = "0.1.0"
+version = "0.1.1"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
 license = "BSD-3"
@@ -12,16 +12,39 @@ numpy = "^1.23.4"
 scipy = "^1.9.3"
 matplotlib = "^3.6.1"
 
+[tool.poetry.group.development]
+optional = true
 
 [tool.poetry.group.development.dependencies]
-pylint = "^2.15.5"
-mypy = "^0.982"
-ipykernel = "^6.16.2"
+mypy = "^0.991"
+pylint = "^2.15.9"
+
+[tool.poetry.group.notebook]
+optional = true
+
+[tool.poetry.group.notebook.dependencies]
+ipykernel = "^6.19.4"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+
 [[tool.mypy.overrides]]
 module = "scipy.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+ignore_missing_imports = true
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "t", "x", "y", "_", "ax", "dx", "dy", "dw", "ix", "iy"]
+
+[tool.pylint.typecheck]
+ignored-argument-names = "_.*|data"
+
+[tool.pylint.design]
+max-locals = 20

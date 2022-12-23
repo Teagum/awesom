@@ -2,12 +2,10 @@
 Plotting functions for SOMs.
 """
 
-__all__ = ["cluster_by", "component", "hit_counts", "qerror", "label_target",
-           "umatrix", "wire"]
-
 from typing import Callable, Optional, Union
 
 import numpy as np
+import numpy.typing as npt
 
 from . import utilities as utils
 from . typealias import Array, Axis
@@ -141,10 +139,12 @@ def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
 
 
 def wire(ax: Axis, som,
-         unit_size: Union[int, float, Array] = 100.0,
-         line_width: Union[int, float] = 1.0,
+         unit_size: Union[float, Array] = 100.0,
+         line_width: float = 1.0,
          highlight: Optional[Array] = None, labels: bool = False,
+         unit_color: str = 'k',
          **kwargs) -> None:
+    # pylint: disable = too-many-locals, too-many-arguments
     """Plot the weight vectors of a SOM with two-dimensional feature space.
 
     Neighbourhood relations are indicate by connecting lines.
@@ -170,13 +170,13 @@ def wire(ax: Axis, som,
         raise ValueError(msg)
     marker_size_bg = marker_size + marker_size / 100 * 30
 
-    bg_color: str = "w"
+    bg_color: npt.ArrayLike = "w"
     hl_color: str = "r"
 
     line_props = {
         'color': "k",
         'alpha': 0.7,
-        'lw': 1.0,
+        'lw': line_width,
         'zorder': 9,
         }
     line_props.update(kwargs)
@@ -192,20 +192,20 @@ def wire(ax: Axis, som,
         's': marker_size,
         'c': unit_color,
         'alpha': line_props["alpha"],
+        'edgecolor': "None",
+        'zorder': 12
         }
 
     if highlight is not None:
         bg_color = np.where(highlight, hl_color, bg_color)
 
-    rsw = som.weights.reshape(som.shape, 2)
+    rsw = som.weights.reshape(*som.shape, 2)
     v_wx, v_wy = rsw.T
     h_wx, h_wy = np.rollaxis(rsw, 1).T
-    vlines = ax.plot(v_wx, v_wy, **line_props)
-    hlines = ax.plot(h_wx, h_wy, **line_props)
-    bgmarker = ax.scatter(v_wx, v_wy, s=marker_size_bg, c=bg_color,
-                          edgecolors="None", zorder=11)
-    umarker = ax.scatter(v_wx, v_wy, s=marker_size, c=unit_color, alpha=alpha,
-                         edgecolors="None", zorder=12)
+    _vlines = ax.plot(v_wx, v_wy, **line_props)
+    _hlines = ax.plot(h_wx, h_wy, **line_props)
+    _bgmarker = ax.scatter(v_wx, v_wy, **marker_bg_props)
+    _umarker = ax.scatter(v_wx, v_wy, **marker_hl_props)
 
     font = {'fontsize': 4,
             'va': "bottom",
@@ -220,11 +220,9 @@ def wire(ax: Axis, som,
             }
 
     if labels is True:
-        for (px, py), (ix, iy) in zip(som.weights, np.ndindex(shape)):
-            ax.text(px+1.3, py, f"({ix}, {iy})", font, bbox=bbox, zorder=13)
+        for (sw_x, sw_y), (ix, iy) in zip(som.weights, np.ndindex(som.shape)):
+            ax.text(sw_x+1.3, sw_y, f"({ix}, {iy})", font, bbox=bbox, zorder=13)
     ax.set_aspect("equal")
-    return None
-
 
 
 def data_2d(ax: Axis, data: Array, colors: Array,
