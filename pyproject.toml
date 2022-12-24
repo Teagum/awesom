@@ -48,3 +48,22 @@ ignored-argument-names = "_.*|data"
 
 [tool.pylint.design]
 max-locals = 20
+
+[project]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology"
+]
+
+[project.urls]
+"Issues" = "https://github.com/Teagum/awesom/issues"
+"Homepage" = "https://github.com/Teagum/awesom"
