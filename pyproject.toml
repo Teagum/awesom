@@ -1,10 +1,24 @@
 [tool.poetry]
 name = "awesom"
-version = "0.1.2"
+version = "0.1.2-post1"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
-license = "BSD-3"
+license = "BSD-3-Clause"
 readme = "README.md"
+homepage = "https://github.com/Teagum/awesom"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -48,22 +62,3 @@ ignored-argument-names = "_.*|data"
 
 [tool.pylint.design]
 max-locals = 20
-
-[project]
-classifiers = [
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Topic :: Education",
-    "Topic :: Scientific/Engineering",
-    "Typing :: Typed",
-    "License :: OSI Approved :: BSD License",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Information Technology"
-]
-
-[project.urls]
-"Issues" = "https://github.com/Teagum/awesom/issues"
-"Homepage" = "https://github.com/Teagum/awesom"
