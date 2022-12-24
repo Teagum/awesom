@@ -2,7 +2,7 @@
 Type aliases
 """
 import pathlib
-from typing import Callable, Union
+from typing import Callable
 
 from matplotlib import axes
 import numpy as np
@@ -15,7 +15,7 @@ Coord = tuple[int, int]
 Shape = tuple[int, int]
 SomDims = tuple[int, int, int]
 
-Metric = Union[Callable[[Array, Array], float], str]
-WeightInit = Union[Callable[[Array, Shape], Array], str]
+Metric = str | Callable[[Array, Array], float]
+WeightInit = str | Callable[[Array, Shape], Array]
 
 FilePath = pathlib.Path | str

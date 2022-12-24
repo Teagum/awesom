@@ -2,7 +2,7 @@
 Plotting functions for SOMs.
 """
 
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -115,7 +115,7 @@ def cluster_by(ax: Axis, som, data: Array, target: Array,
     ax.scatter(*bmu_xy, **props)
 
 
-def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
+def hit_counts(ax: Axis, som, transform: Callable | None = None,
                **kwargs) -> None:
     """Plot the winner histogram.
 
@@ -139,11 +139,9 @@ def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
 
 
 def wire(ax: Axis, som,
-         unit_size: Union[float, Array] = 100.0,
-         line_width: float = 1.0,
-         highlight: Optional[Array] = None, labels: bool = False,
-         unit_color: str = 'k',
-         **kwargs) -> None:
+         unit_size: float | Array = 100.0, line_width: float = 1.0,
+         highlight: Array | None = None, labels: bool = False,
+         unit_color: str = 'k', **kwargs) -> None:
     # pylint: disable = too-many-locals, too-many-arguments
     """Plot the weight vectors of a SOM with two-dimensional feature space.
 
