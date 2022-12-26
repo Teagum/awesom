@@ -5,10 +5,12 @@ Function for generating test and illustration data sets.
 import numpy as np
 from scipy import stats
 
+from . typealias import IntArray, Float64Array
+
 
 def norm_circle(n_classes: int, n_per_class: int, class_std: int,
                 center: tuple[int, int] = (0, 0), radius: int = 5,
-                seed: int | None = None):
+                seed: int | None = None) -> tuple[FloatArray, IntArray]:
     # pylint: disable = too-many-arguments
     """Generate ``n_per_class`` samples from ``n_classes`` bivariate normal
     distributions, each with standard deviation ``class_std``. The means

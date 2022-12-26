@@ -8,13 +8,15 @@ import pathlib
 import pickle
 
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import distance
 
 from . import defaults
 from . import grid
 from . import neighbors
 from . import utilities as utils
-from . typealias import Array, Metric, Shape, SomDims, WeightInit, FilePath
+from . typealias import (Array, FloatArray, Metric, Shape, SomDims,
+                         WeightInit, FilePath)
 
 
 class SomBase:
@@ -237,7 +239,8 @@ class SomBase:
             raise ValueError("Weights not initialized")
         return self._weights[bmi]
 
-    def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True):
+    def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True
+                ) -> FloatArray:
         """Compute U-matrix of SOM instance.
 
         Args:
@@ -294,7 +297,8 @@ class IncrementalMap(SomBase):
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
 
-    def fit(self, train_data, verbose=False, output_weights=False):
+    def fit(self, train_data: npt.ArrayLike, verbose: bool = False,
+            output_weights: bool = False) -> None:
         """Fit the SOM to the ``training_data``
 
         The method first initializes the weight vectors and then starts

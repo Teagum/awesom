@@ -3,7 +3,7 @@ Utilities for self.organizing maps.
 """
 
 import itertools
-from typing import Iterable, Iterator
+from typing import Any, Iterable, Iterator
 
 import numpy as np
 from scipy.spatial import distance
@@ -104,7 +104,8 @@ def best_match(weights: Array, inp: Array, metric: Metric
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
+def sample_pca(dims: SomDims, data: Array | None = None, **kwargs: Any
+               ) -> Array:
     """Compute initial SOM weights by sampling from the first two principal
     components of the input data.
 

@@ -1,6 +1,8 @@
 """
 Grid for Self-organizing maps
 """
+from typing import Generator
+
 import numpy as np
 from scipy.spatial import cKDTree
 
@@ -55,6 +57,6 @@ class SomGrid:
         idx = self.nhb_idx(radius, points)
         return self.pos[idx]
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         for row, col in zip(self.rows.flat, self.cols.flat):
             yield row, col
