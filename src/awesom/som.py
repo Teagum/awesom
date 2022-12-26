@@ -14,7 +14,8 @@ from . import defaults
 from . import grid
 from . import neighbors
 from . import utilities as utils
-from . typealias import Array, Metric, Shape, SomDims, WeightInit, FilePath
+from . typealias import (Array, FloatArray, Metric, Shape, SomDims,
+                         WeightInit, FilePath)
 
 
 class SomBase:
@@ -237,7 +238,8 @@ class SomBase:
             raise ValueError("Weights not initialized")
         return self._weights[bmi]
 
-    def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True):
+    def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True
+                ) -> FloatArray:
         """Compute U-matrix of SOM instance.
 
         Args:
