@@ -7,10 +7,11 @@ import numpy.typing as npt
 
 from scipy.spatial import distance
 
-from . typealias import Array, IntArray, Shape, Coord
+from . typealias import Array, IntArray, FloatArray, Shape, Coord
 
 
-def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
+def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float
+             ) -> FloatArray:
     """Compute n-dimensional Gaussian neighbourhood.
 
     Gaussian neighborhood smoothes the array.
@@ -25,7 +26,8 @@ def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
     return np.exp(-dists/(2*radius**2)).T
 
 
-def mexican(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
+def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
+            ) -> FloatArray:
     """Compute n-dimensional Mexcican hat neighbourhood.
 
     Mexican hat neighborhood smoothes the array.
@@ -40,7 +42,7 @@ def mexican(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
     return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
 
 
-def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
+def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
     """Compute n-dimensional cityblock neighborhood.
 
     The cityblock neighborhood is a star-shaped area
@@ -58,7 +60,7 @@ def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
     return (dists <= radius).astype(int).T
 
 
-def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> Array:
+def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> FloatArray:
     """Compute n-dimensional cityblock neighborhood.
 
     The cityblock neighborhood is a star-shaped area
@@ -74,7 +76,7 @@ def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> Array:
     return distance.squareform(distance.pdist(grid, metric))
 
 
-def rect(grid: IntArray, center: npt.ArrayLike, radius: float) -> Array:
+def rect(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
     """Compute n-dimensional Chebychev neighborhood.
 
     The Chebychev neighborhood is a square-shaped area
@@ -106,7 +108,7 @@ def check_bounds(shape: Shape, point: Coord) -> bool:
     return (0 <= point[0] < shape[0]) and (0 <= point[1] < shape[1])
 
 
-def direct_rect_nb(shape: Shape, point: Coord) -> Array:
+def direct_rect_nb(shape: Shape, point: Coord) -> IntArray:
     """Return the set of direct neighbours of ``point`` given rectangular
     topology.
 

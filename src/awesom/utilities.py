@@ -6,10 +6,11 @@ import itertools
 from typing import Any, Iterable, Iterator
 
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import distance
 from scipy import stats
 
-from . typealias import Array, Metric, SomDims
+from . typealias import Array, IntArray, FloatArray, Metric, SomDims
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
@@ -25,7 +26,7 @@ def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
     return itertools.product(range(n_rows), range(n_cols))
 
 
-def grid(n_rows: int, n_cols: int) -> Array:
+def grid(n_rows: int, n_cols: int) -> IntArray:
     """Compute grid indices of a two-dimensional array.
 
     Args:
@@ -35,7 +36,7 @@ def grid(n_rows: int, n_cols: int) -> Array:
     Returns:
         Two-dimensional array in which each row represents an multi-index.
     """
-    return np.array(list(grid_iter(n_rows, n_cols)))
+    return np.array(list(grid_iter(n_rows, n_cols)), dtype=int)
 
 
 def decrease_linear(start: float, step: float, stop: float = 1.0
@@ -64,8 +65,8 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
             yield start * np.exp(coef*stp)
 
 
-def best_match(weights: Array, inp: Array, metric: Metric
-               ) -> tuple[Array, Array]:
+def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
+               ) -> tuple[FloatArray, FloatArray]:
     """Compute the best matching unit of ``weights`` for each
     element in ``inp``.
 
@@ -104,8 +105,8 @@ def best_match(weights: Array, inp: Array, metric: Metric
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_pca(dims: SomDims, data: Array | None = None, **kwargs: Any
-               ) -> Array:
+def sample_pca(dims: SomDims, data: FloatArray | None = None, **kwargs: Any
+               ) -> FloatArray:
     """Compute initial SOM weights by sampling from the first two principal
     components of the input data.
 
@@ -123,7 +124,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs: Any
     n_rows, n_cols, n_feats = dims
 
     if data is None:
-        data = np.random.randint(-100, 100, (300, n_feats))
+        data = np.random.randint(-100, 100, (300, n_feats)).astype(float)
     _, vects, trans_data = pca(data, 2)
     data_min = trans_data.min(axis=0)
     data_max = trans_data.max(axis=0)
@@ -139,7 +140,7 @@ def sample_pca(dims: SomDims, data: Array | None = None, **kwargs: Any
     return weights
 
 
-def sample_rnd(dims: SomDims, data: Array | None = None) -> Array:
+def sample_rnd(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     """Compute initial SOM weights by sampling uniformly from the data space.
 
     Args:
@@ -161,7 +162,7 @@ def sample_rnd(dims: SomDims, data: Array | None = None) -> Array:
     return np.column_stack(weights)
 
 
-def sample_stm(dims: SomDims, data: Array | None = None) -> Array:
+def sample_stm(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     """Compute initial SOM weights by sampling stochastic matrices from
     Dirichlet distribution.
 
@@ -199,7 +200,7 @@ def sample_stm(dims: SomDims, data: Array | None = None) -> Array:
     return st_matrix
 
 
-def sample_hist(dims: SomDims, data: Array | None = None) -> Array:
+def sample_hist(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     """Sample sum-normalized histograms.
 
     Args:
@@ -237,7 +238,8 @@ def distribute(bmu_idx: Iterable[int], n_units: int
     return unit_matches
 
 
-def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
+def pca(data: FloatArray, n_comps: int = 2
+        ) -> tuple[FloatArray, FloatArray, FloatArray]:
     """Perfom principal component analysis
 
     Interanlly, ``data`` will be centered but not scaled.
@@ -260,8 +262,8 @@ def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
     return vals, vects, data_centered @ vects.T
 
 
-def scale(arr: Array, new_min: int = 0, new_max: int = 1, axis: int = -1
-          ) -> Array:
+def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
+          ) -> FloatArray:
     """Scale ``arr`` between ``new_min`` and ``new_max``
 
     Args:

@@ -8,7 +8,6 @@ import pathlib
 import pickle
 
 import numpy as np
-import numpy.typing as npt
 from scipy.spatial import distance
 
 from . import defaults
@@ -297,7 +296,7 @@ class IncrementalMap(SomBase):
         super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
                          seed=seed)
 
-    def fit(self, train_data: npt.ArrayLike, verbose: bool = False,
+    def fit(self, train_data: FloatArray, verbose: bool = False,
             output_weights: bool = False) -> None:
         """Fit the SOM to the ``training_data``
 

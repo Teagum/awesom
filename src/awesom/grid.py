@@ -6,7 +6,7 @@ from typing import Generator
 import numpy as np
 from scipy.spatial import cKDTree
 
-from . typealias import Array, Shape
+from . typealias import IntArray, Shape
 
 
 class SomGrid:
@@ -20,7 +20,7 @@ class SomGrid:
         self.tree = cKDTree(self.pos)
         self.rows, self.cols = np.indices(shape)
 
-    def nhb_idx(self, radius: float, points: Array | None = None) -> Array:
+    def nhb_idx(self, radius: float, points: IntArray | None = None) -> IntArray:
         """Compute the neighbourhood unit indices within ``radius``
 
         If ``points`` is given, return the neighbourhood around each unit in
@@ -38,7 +38,7 @@ class SomGrid:
             points = self.pos
         return np.asarray(self.tree.query_ball_point(points, radius, np.inf))
 
-    def nhb(self, radius: float, points: Array | None = None) -> Array:
+    def nhb(self, radius: float, points: IntArray | None = None) -> IntArray:
         """Compute neighbourhood within ``radius``
 
         If ``points`` is given, return the neighbourhood around each unit in
