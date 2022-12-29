@@ -303,7 +303,7 @@ class IncrementalMap(SomBase):
         The method first initializes the weight vectors and then starts
         training.
         """
-        self._weights = self.init_weights(self.dims, train_data)
+        self._weights = self.init_weights(self.dims, train_data) # type: ignore
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
 
@@ -317,12 +317,14 @@ class IncrementalMap(SomBase):
                 if output_weights:
                     fname = f"weights/weights_{c_iter:05}_{i:05}.npy"
                     with open(fname, "wb") as fobj:
-                        np.save(fobj, self._weights, allow_pickle=False)
-                bmu, err = utils.best_match(self.weights, fvect, self.metric)
+                        # see https://github.com/Teagum/awesom/issues/6 for the
+                        # following ingnores
+                        np.save(fobj, self._weights, allow_pickle=False) # type: ignore
+                bmu, err = utils.best_match(self.weights, fvect, self.metric) # type: ignore
                 self._hit_counts[bmu] += 1
-                m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
+                m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T # type: ignore
                 neighbourhood = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
                 self._weights += c_eta * neighbourhood * (fvect - self._weights)
 
-            _, err = utils.best_match(self.weights, train_data, self.metric)
+            _, err = utils.best_match(self.weights, train_data, self.metric) # type: ignore
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
