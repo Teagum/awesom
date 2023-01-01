@@ -7,7 +7,7 @@ import numpy.typing as npt
 
 from scipy.spatial import distance
 
-from . typealias import Array, IntArray, FloatArray, Shape, Coord
+from . typealias import IntArray, FloatArray, Shape, Coord
 
 
 def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float

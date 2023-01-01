@@ -3,14 +3,13 @@ Utilities for self.organizing maps.
 """
 
 import itertools
-from typing import Any, Iterable, Iterator
+from typing import Iterable, Iterator
 
 import numpy as np
-import numpy.typing as npt
 from scipy.spatial import distance
 from scipy import stats
 
-from . typealias import Array, IntArray, FloatArray, Metric, SomDims
+from . typealias import IntArray, FloatArray, Metric, SomDims
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
