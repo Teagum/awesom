@@ -105,39 +105,6 @@ def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_pca(dims: SomDims, data: FloatArray | None = None, **kwargs: Any
-               ) -> FloatArray:
-    """Compute initial SOM weights by sampling from the first two principal
-    components of the input data.
-
-    Args:
-        dims:   Dimensions of SOM.
-        data:   Input data set.
-        adapt:  If ``True``, the largest value of ``shape`` is applied to the
-                principal component with the largest sigular value. This
-                orients the map, such that map dimension with the most units
-                coincides with principal component with the largest variance.
-
-    Returns:
-        Array of SOM weights.
-    """
-    n_rows, n_cols, n_feats = dims
-
-    if data is None:
-        data = np.random.randint(-100, 100, (300, n_feats)).astype(float)
-    _, vects, trans_data = pca(data, 2)
-    data_min = trans_data.min(axis=0)
-    data_max = trans_data.max(axis=0)
-    if "adapt" in kwargs and kwargs['adapt'] is True:
-        shape = tuple(sorted((n_rows, n_cols), reverse=True))
-    else:
-        shape = (n_rows, n_cols)
-    dim_x = np.linspace(data_min[0], data_max[0], shape[0])
-    dim_y = np.linspace(data_min[1], data_max[1], shape[1])
-    grid_x, grid_y = np.meshgrid(dim_x, dim_y)
-    points = np.vstack((grid_x.ravel(), grid_y.ravel()))
-    weights = points.T @ vects + data.mean(axis=0)
-    return weights
 
 
 def sample_rnd(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
@@ -286,5 +253,4 @@ def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
 weight_initializer = {
     'rnd': sample_rnd,
     'stm': sample_stm,
-    'pca': sample_pca,
     'hist': sample_hist}
