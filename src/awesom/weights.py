@@ -18,10 +18,10 @@ class Weights:
         self.dw = dw
         self.shape = (self.dx, self.dw, self.dw)
         self.n_units = self.dx * self.dy
-        self._weights = np.empty((self.n_units, self.dw), dtype=np.float64)
+        self.vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
 
     def __getitem__(self, key: Any) -> FloatArray:
-        return cast(FloatArray, self._weights[key])
+        return cast(FloatArray, self.vectors[key])
 
     def init_pca(self, training_data: FloatArray | None = None,
                  adapt: bool = True) -> None:
@@ -58,4 +58,4 @@ class Weights:
 
         grid_x, grid_y = np.meshgrid(dim_x, dim_y)
         points = np.vstack((grid_x.ravel(), grid_y.ravel()))
-        self._weights = points.T @ vects + data.mean(axis=0)
+        self.vectors[...] = points.T @ vects + training_data.mean(axis=0)
