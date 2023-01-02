@@ -41,10 +41,8 @@ class Weights:
             Array of weights.
         """
         if training_data is None:
-            data = np.random.randint(-100, 100, (300, self.dw)).astype(float)
-            _, vects, trans_data = utilities.pca(data, 2)
-        else:
-            _, vects, trans_data = utilities.pca(training_data, 2)
+            training_data = np.random.randint(-100, 100, (300, self.dw)).astype(float)
+        _, vects, trans_data = utilities.pca(training_data, 2)
 
         if adapt:
             shape = tuple(sorted((self.dx, self.dy), reverse=True))
