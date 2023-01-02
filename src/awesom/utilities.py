@@ -104,30 +104,6 @@ def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-
-
-def sample_rnd(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
-    """Compute initial SOM weights by sampling uniformly from the data space.
-
-    Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set. If ``None``, sample from [-10, 10].
-
-    Returns:
-        Array of SOM weights.
-    """
-    n_rows, n_cols, n_feats = dims
-    n_units = n_rows * n_cols
-    if data is not None:
-        data_limits = np.column_stack((data.min(axis=0), data.max(axis=0)))
-    else:
-        data_limits = np.random.randint(-10, 10, (n_feats, 2))
-        data_limits.sort()
-    weights = [np.random.uniform(dmin, dmax, n_units)
-               for (dmin, dmax) in data_limits]
-    return np.column_stack(weights)
-
-
 def sample_stm(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     """Compute initial SOM weights by sampling stochastic matrices from
     Dirichlet distribution.
@@ -250,6 +226,5 @@ def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
 
 
 weight_initializer = {
-    'rnd': sample_rnd,
     'stm': sample_stm,
     'hist': sample_hist}

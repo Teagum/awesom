@@ -57,3 +57,24 @@ class Weights:
         grid_x, grid_y = np.meshgrid(dim_x, dim_y)
         points = np.vstack((grid_x.ravel(), grid_y.ravel()))
         self.vectors[...] = points.T @ vects + training_data.mean(axis=0)
+
+
+    def init_rnd(self, training_data: FloatArray | None = None) -> None:
+        """Compute initial SOM weights by sampling uniformly from the data space.
+
+        Args:
+            dims:  Dimensions of SOM
+            data:  Input data set. If ``None``, sample from [-10, 10]
+
+        Returns:
+            Array of SOM weights
+        """
+        if training_data is not None:
+            data_limits = np.column_stack((training_data.min(axis=0),
+                                           training_data.max(axis=0)))
+        else:
+            data_limits = np.random.randint(-10, 10, (self.dw, 2))
+            data_limits.sort()
+        weights = [np.random.uniform(dmin, dmax, self.dx*self.dy)
+                   for (dmin, dmax) in data_limits]
+        self.vectors[...] = np.column_stack(weights)
