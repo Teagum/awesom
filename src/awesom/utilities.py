@@ -142,18 +142,21 @@ def sample_stm(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     return st_matrix
 
 
-def sample_hist(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
-    """Sample sum-normalized histograms.
+def sample_probability_vectors(n_vectors: int, size: int) -> FloatArray:
+    """Sample stochastic vectors
+
+    Sample random stochastic vectors with uniformly distributed probability
+    mass. The sum of each vector equals 1.0 and each element is a number
+    between 0.0 and 1.0.
 
     Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set.
+        n_vectors: Number of vectors
+        size:      Vector size
 
     Returns:
-        Two-dimensional array in which each row is a historgram.
+        Two-dimensional array, whose rows correspond to vectors
     """
-    n_rows, n_cols, n_feats = dims
-    return stats.dirichlet(np.ones(n_feats)).rvs(n_rows*n_cols)
+    return stats.dirichlet(np.ones(size)).rvs(n_vectors)
 
 
 def distribute(bmu_idx: Iterable[int], n_units: int
@@ -227,4 +230,4 @@ def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
 
 weight_initializer = {
     'stm': sample_stm,
-    'hist': sample_hist}
+    }
