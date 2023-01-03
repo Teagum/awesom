@@ -76,8 +76,10 @@ class Weights:
         self.vectors[...] = np.column_stack(weights)
 
 
-    def init_probability(self) -> None:
+    def init_stv(self) -> None:
         """Initialize with stochastic vectors
         """
         nvt = self.dx * self.dy
-        self.vectors[...] = utils.sample_probability_vectors(nvt, self.dw)
+        self.vectors[...] = utils.sample_st_vector(nvt, self.dw)
+
+

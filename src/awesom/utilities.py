@@ -142,7 +142,7 @@ def sample_stm(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
     return st_matrix
 
 
-def sample_probability_vectors(n_vectors: int, size: int) -> FloatArray:
+def sample_st_vector(n_vectors: int, size: int) -> FloatArray:
     """Sample stochastic vectors
 
     Sample random stochastic vectors with uniformly distributed probability
