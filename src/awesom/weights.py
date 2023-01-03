@@ -5,9 +5,8 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom import utilities
 from awesom.typealias import FloatArray
-
+import awesom.utilities as utils
 
 class Weights:
     """Weights
@@ -42,7 +41,7 @@ class Weights:
         """
         if training_data is None:
             training_data = np.random.randint(-100, 100, (300, self.dw)).astype(float)
-        _, vects, trans_data = utilities.pca(training_data, 2)
+        _, vects, trans_data = utils.pca(training_data, 2)
 
         if adapt:
             shape = tuple(sorted((self.dx, self.dy), reverse=True))
@@ -78,3 +77,10 @@ class Weights:
         weights = [np.random.uniform(dmin, dmax, self.dx*self.dy)
                    for (dmin, dmax) in data_limits]
         self.vectors[...] = np.column_stack(weights)
+
+
+    def init_probability(self) -> None:
+        """Initialize with stochastic vectors
+        """
+        nvt = self.dx * self.dy
+        self.vectors[...] = utils.sample_probability_vectors(nvt, self.dw)
