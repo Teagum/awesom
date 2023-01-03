@@ -8,6 +8,7 @@ import numpy as np
 from awesom.typealias import FloatArray
 import awesom.utilities as utils
 
+
 class Weights:
     """Weights
     """
@@ -19,8 +20,10 @@ class Weights:
         self.n_units = self.dx * self.dy
         self.vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
 
+
     def __getitem__(self, key: Any) -> FloatArray:
         return cast(FloatArray, self.vectors[key])
+
 
     def init_pca(self, training_data: FloatArray | None = None,
                  adapt: bool = True) -> None:
@@ -30,14 +33,11 @@ class Weights:
         components of the input data set.
 
         Args:
-            trainig_data:   Input data set
+            trainig_data:  Input data set
             adapt:  If ``True``, the largest value of ``shape`` is applied to the
                     principal component with the largest sigular value. This
                     orients the map, such that map dimension with the most units
                     coincides with principal component with the largest variance.
-
-        Returns:
-            Array of weights.
         """
         if training_data is None:
             training_data = np.random.randint(-100, 100, (300, self.dw)).astype(float)
@@ -64,9 +64,6 @@ class Weights:
         Args:
             dims:  Dimensions of SOM
             data:  Input data set. If ``None``, sample from [-10, 10]
-
-        Returns:
-            Array of SOM weights
         """
         if training_data is not None:
             data_limits = np.column_stack((training_data.min(axis=0),
