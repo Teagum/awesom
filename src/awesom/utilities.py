@@ -104,42 +104,23 @@ def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_stm(dims: SomDims, data: FloatArray | None = None) -> FloatArray:
-    """Compute initial SOM weights by sampling stochastic matrices from
-    Dirichlet distribution.
+def sample_st_matrix(n_mat: int, size: int) -> FloatArray:
+    """Sample stochastic matrices from Dirichlet distribution
 
-    The rows of each n by n stochastic matrix are sampes drawn from the
-    Dirichlet distribution, where n is the number of rows and cols of the
-    matrix. The diagonal elemets of the matrices are set to twice the
-    probability of the remaining elements.
-    The square root of the weight vectors' size must be a real integer.
+    The distribution is configured to place five times more probability mass on
+    the main diagonal than on the remaining elements.
 
     Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set.
+        n_mat:  Number of matrices
+        size:   Number of matirx row/cols
 
     Returns:
-        Array of SOM weights.
-
-    Notes:
-        Each row of the output array is to be considered a flattened
-        stochastic matrix, such that each ``N = sqrt(data.shape[1])`` values
-        are a discrete probability distribution forming the ``N`` th row of
-        the matrix.
+        Two-dimensional array. Each row corresponds to a flattened matrix.
     """
-    n_rows, n_cols, n_feats = dims
-    n_states = np.sqrt(n_feats)
-    if bool(n_states - int(n_states)):
-        msg = (f"Weight vector with {n_feats} elements is not "
-               "reshapeable to square matrix.")
-        raise ValueError(msg)
-
-    n_states = int(n_states)
-    n_units = n_rows * n_cols
-    alpha = np.random.randint(1, 10, (n_states, n_states))
-    st_matrix = np.hstack([stats.dirichlet(a).rvs(size=n_units)
-                           for a in alpha])
-    return st_matrix
+    pfact = 5
+    alpha = np.ones((size, size))
+    np.fill_diagonal(alpha, pfact)
+    return np.hstack([stats.dirichlet(a).rvs(n_mat) for a in alpha])
 
 
 def sample_st_vector(n_vectors: int, size: int) -> FloatArray:
@@ -226,8 +207,3 @@ def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
     out = fact * (new_max - new_min) + new_min
 
     return out
-
-
-weight_initializer = {
-    'stm': sample_stm,
-    }
