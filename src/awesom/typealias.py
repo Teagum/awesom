@@ -19,6 +19,5 @@ Shape = tuple[int, int]
 SomDims = tuple[int, int, int]
 
 Metric = str | Callable[[Array, Array], float]
-WeightInit = str | Callable[[Array, Shape], Array]
 
 FilePath = pathlib.Path | str
