@@ -2,6 +2,7 @@
 Neighborhood computations
 """
 
+from typing import cast
 import numpy as np
 import numpy.typing as npt
 
@@ -21,9 +22,14 @@ def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float
         center    Index of the neighborhood center.
         radius    Size of neighborhood.
     """
-    center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, metric="sqeuclidean")
-    return np.exp(-dists/(2*radius**2)).T
+    if radius <= 0:
+        raise ValueError("Radius <= 0")
+
+    dists = np.empty((grid.shape[0], 1), dtype=np.float64)
+    distance.cdist(center, grid, metric="sqeuclidean", out=dists)
+    np.divide(-dists, 2*radius**2, dists)
+    np.exp(dists, out=dists)
+    return dists.T
 
 
 def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
@@ -37,9 +43,22 @@ def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
         center    Index of the neighborhood center.
         radius    Size of neighborhood.
     """
-    center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, metric="sqeuclidean")
-    return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
+    if radius <= 0:
+        raise ValueError("Radius <= 0")
+
+    rsq = radius**2
+    dists = np.empty((grid.shape[0], 1), dtype=np.float64)
+    distance.cdist(center, grid, metric="sqeuclidean", out=dists)
+
+    fact = np.empty((grid.shape[0], 1), dtype=np.float64)
+    norm = np.empty((grid.shape[0], 1), dtype=np.float64)
+    np.divide(dists, rsq, out=fact)
+    np.divide(fact, 2, out=norm)
+    np.subtract(1, fact, out=fact)
+    np.divide(-dists, norm, out=dists)
+    np.multiply(fact, dists, out=dists)
+    return dists.T
+    # return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
 
 
 def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
@@ -55,9 +74,9 @@ def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
 
     Returns:
     """
-    center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, "cityblock")
-    return (dists <= radius).astype(int).T
+    dists = np.empty((grid.shape[0], 1), dtype=np.float64)
+    distance.cdist(center, grid, "cityblock", out=dists)
+    return np.transpose(dists <= radius)
 
 
 def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> FloatArray:
@@ -73,7 +92,8 @@ def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> FloatArray:
     Returns:
         Pairwise distances of map units.
     """
-    return distance.squareform(distance.pdist(grid, metric))
+    dists = distance.pdist(grid, metric)
+    return cast(npt.NDArray[np.float64], distance.squareform(dists))
 
 
 def rect(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
@@ -90,9 +110,9 @@ def rect(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
     Returns:
         Two-dimensional array of in
     """
-    center = np.atleast_2d(center)
-    dists = distance.cdist(center, grid, "chebychev")
-    return (dists <= radius).astype(int).T
+    dists = np.empty((grid.shape[0], 1), dtype=np.float64)
+    distance.cdist(center, grid, "chebychev", out=dists)
+    return np.transpose(dists <= radius)
 
 
 def check_bounds(shape: Shape, point: Coord) -> bool:

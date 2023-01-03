@@ -3,7 +3,7 @@ Utilities for self.organizing maps.
 """
 
 import itertools
-from typing import Iterable, Iterator
+from typing import cast, Iterable, Iterator
 
 import numpy as np
 from scipy.spatial import distance
@@ -117,10 +117,18 @@ def sample_st_matrix(n_mat: int, size: int) -> FloatArray:
     Returns:
         Two-dimensional array. Each row corresponds to a flattened matrix.
     """
-    pfact = 5
-    alpha = np.ones((size, size))
+    if n_mat < 1:
+        raise ValueError("n_mat < 1")
+
+    if size < 2:
+        raise ValueError("size < 2")
+
+    pfact = 5.0
+    alpha = np.ones((size, size), dtype=np.float64)
     np.fill_diagonal(alpha, pfact)
-    return np.hstack([stats.dirichlet(a).rvs(n_mat) for a in alpha])
+
+    samples = [stats.dirichlet(a).rvs(n_mat) for a in alpha]
+    return np.hstack(samples, dtype=np.float64)
 
 
 def sample_st_vector(n_vectors: int, size: int) -> FloatArray:
@@ -137,7 +145,15 @@ def sample_st_vector(n_vectors: int, size: int) -> FloatArray:
     Returns:
         Two-dimensional array, whose rows correspond to vectors
     """
-    return stats.dirichlet(np.ones(size)).rvs(n_vectors)
+    if n_vectors < 1:
+        raise ValueError("``n_vectors < 0")
+
+    if size < 1:
+        raise ValueError("``size`` < 1")
+
+    alpha = np.ones(size, dtype=np.float64)
+    samples = stats.dirichlet(alpha).rvs(n_vectors)
+    return np.asanyarray(samples, dtype=np.float64)
 
 
 def distribute(bmu_idx: Iterable[int], n_units: int
@@ -206,4 +222,4 @@ def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
     fact = (arr-xmin) / (xmax - xmin)
     out = fact * (new_max - new_min) + new_min
 
-    return out
+    return cast(FloatArray, out)
