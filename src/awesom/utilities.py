@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial import distance
 from scipy import stats
 
-from . typealias import IntArray, FloatArray, Metric, SomDims
+from . typealias import IntArray, FloatArray, Metric
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
