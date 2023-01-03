@@ -83,3 +83,8 @@ class Weights:
         self.vectors[...] = utils.sample_st_vector(nvt, self.dw)
 
 
+    def init_stm(self) -> None:
+        """Initialize with stochastic matrices
+        """
+        nvt = self.dx * self.dy
+        self.vectors[...] = utils.sample_st_matrix(nvt, self.dw)
