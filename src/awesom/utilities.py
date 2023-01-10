@@ -65,7 +65,7 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
 
 
 def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
-               ) -> tuple[FloatArray, FloatArray]:
+               ) -> tuple[IntArray, FloatArray]:
     """Compute the best matching unit of ``weights`` for each
     element in ``inp``.
 
