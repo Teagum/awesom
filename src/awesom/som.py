@@ -6,33 +6,35 @@ Self-organizing map base classes
 
 import pathlib
 import pickle
+from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import distance
 
 from . import defaults
 from . import grid
 from . import neighbors
 from . import utilities as utils
-from . typealias import (Array, FloatArray, Metric, Shape, SomDims,
-                         WeightInit, FilePath)
+from . weights import Weights
+from . typealias import FloatArray, IntArray, Metric, Shape, SomDims, FilePath
 
 
 class SomBase:
     """Self-organizing map base class
     """
-    def __init__(self, dims: SomDims, n_iter: int, eta: float,
-                 nhr: float, nh_shape: str, init_weights: WeightInit,
-                 metric: Metric, seed: float | None = None):
+    def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
+                 nh_shape: str, weights: Weights, metric: Metric = "euclidean",
+                 seed: float | None = None):
 
         self._grid = grid.SomGrid(dims[:2])
         self.n_features = dims[2]
-        self._hit_counts = np.zeros(self.n_units)
+        self._hit_counts = np.zeros(self.n_units, dtype=np.int_)
         self.n_iter = n_iter
         self.metric = metric
         self._qrr = np.zeros(n_iter)
         self._trr = np.zeros(n_iter)
-        self._weights: Array | None = None
+        self._weights = weights
 
         try:
             self._neighbourhood = getattr(neighbors, nh_shape)
@@ -54,16 +56,6 @@ class SomBase:
 
         if seed is not None:
             np.random.seed(seed)
-
-        if isinstance(init_weights, str):
-            self.init_weights = utils.weight_initializer[init_weights]
-        elif callable(init_weights):
-            self.init_weights = init_weights
-        else:
-            msg = "Initializer must be string or callable."
-            raise ValueError(msg)
-
-        self._dists: Array | None = None
 
     @property
     def dims(self) -> SomDims:
@@ -101,31 +93,27 @@ class SomBase:
         return self._grid
 
     @property
-    def dists(self) -> Array | None:
-        """Return the distance matrix of the grid points."""
-        return self._dists
-
-    @property
-    def weights(self) -> Array | None:
+    def weights(self) -> FloatArray:
         """Return the weight vectors."""
-        return self._weights
+        return self._weights.vectors
 
     @property
-    def hit_counts(self) -> Array:
+    def hit_counts(self) -> IntArray:
         """Return total hit counts for each SOM unit."""
         return self._hit_counts
 
     @property
-    def quantization_error(self) -> Array:
+    def quantization_error(self) -> FloatArray:
         """Return quantization error."""
         return self._qrr
 
     @property
-    def topographic_error(self) -> Array:
+    def topographic_error(self) -> FloatArray:
         """Return topographic error."""
         return self._trr
 
-    def calibrate(self, data: Array, target: Array) -> Array:
+    def calibrate(self, data: FloatArray, target: npt.NDArray[Any]
+                  ) -> npt.NDArray[Any]:
         """Retrieve the target value of the best matching input data vector
         for each unit weight vector.
 
@@ -136,12 +124,10 @@ class SomBase:
         Returns:
             Array of target values.
         """
-        if self._weights is None:
-            raise ValueError("Weights not initialized")
-        bm_dv, _ = utils.best_match(data, self._weights, self.metric)
+        bm_dv, _ = utils.best_match(data, self.weights, self.metric)
         return target[bm_dv]
 
-    def distribute(self, data: Array) -> dict[int, list[int]]:
+    def distribute(self, data: FloatArray) -> dict[int, list[int]]:
         """Distribute the vectors of ``data`` on the SOM.
 
         Indices of vectors n ``data`` are mapped to the index of
@@ -157,7 +143,7 @@ class SomBase:
         """
         return utils.distribute(self.match(data), self.n_units)
 
-    def match_flat(self, data: Array) -> Array:
+    def match_flat(self, data: FloatArray) -> IntArray:
         """Return the index of the best matching unit for each vector in
         ``data``.
 
@@ -167,12 +153,10 @@ class SomBase:
         Returns:
             Array of SOM unit indices.
         """
-        if self._weights is None:
-            raise ValueError("Weights not initialized")
-        bmu, _ = utils.best_match(self._weights, data, self.metric)
+        bmu, _ = utils.best_match(self.weights, data, self.metric)
         return bmu
 
-    def match(self, data: Array) -> Array:
+    def match(self, data: FloatArray) -> IntArray:
         """Return the multi index of the best matching unit for each vector in
         ``data``.
 
@@ -187,7 +171,7 @@ class SomBase:
         bmu = self.match_flat(data)
         return np.column_stack(np.unravel_index(bmu, self.shape))
 
-    def predict(self, data: Array) -> Array:
+    def predict(self, data: FloatArray) -> IntArray:
         """Predict the SOM index of the best matching unit
         for each item in ``data``.
 
@@ -197,9 +181,7 @@ class SomBase:
         Returns:
             One-dimensional array of indices.
         """
-        if self._weights is None:
-            raise ValueError("Weights not initialized")
-        bmi, _ = utils.best_match(self._weights, data, self.metric)
+        bmi, _ = utils.best_match(self.weights, data, self.metric)
         return bmi
 
     def save(self, path: FilePath) -> None:
@@ -218,11 +200,9 @@ class SomBase:
         Args:
             path:  File path
         """
-        if self._weights is None:
-            raise ValueError("Weights not initialized")
-        np.save(path, self._weights, allow_pickle=False)
+        np.save(path, self.weights, allow_pickle=False)
 
-    def transform(self, data: Array) -> Array:
+    def transform(self, data: FloatArray) -> FloatArray:
         """Transform each item in ``data`` to feature space.
 
         This, in principle, returns best matching unit's weight vectors.
@@ -234,8 +214,6 @@ class SomBase:
             Position of each data item in the feature space.
         """
         bmi = self.predict(data)
-        if self._weights is None:
-            raise ValueError("Weights not initialized")
         return self._weights[bmi]
 
     def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True
@@ -251,8 +229,6 @@ class SomBase:
         Returns:
             Unified distance matrix.
         """
-        if self._weights is None:
-            raise ValueError("Wrights not initialized")
         u_height = np.empty(self.n_units, dtype="float64")
         nhd_per_unit = self._grid.nhb_idx(radius)
         for i, nhd_idx in enumerate(nhd_per_unit):
@@ -276,10 +252,14 @@ class BatchMap(SomBase):
     The batch training updates the weight vectors once for all input vectors.
     """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = "gaussian", init_weights: WeightInit  = "rnd",
+                 nh_shape: str = "gaussian", weights: Weights | None = None,
                  metric: Metric = "euclidean", seed: int | None = None):
 
-        super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
+        if weights is None:
+            weights = Weights(*dims)
+            weights.init_pca()
+
+        super().__init__(dims, n_iter, eta, nhr, nh_shape, weights, metric,
                          seed=seed)
 
 
@@ -290,20 +270,18 @@ class IncrementalMap(SomBase):
     input vector.
     """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
-                 nh_shape: str = "gaussian", init_weights: WeightInit = "rnd",
+                 nh_shape: str = "gaussian", weights: Weights | None = None,
                  metric: Metric = "euclidean", seed: int | None = None):
 
-        super().__init__(dims, n_iter, eta, nhr, nh_shape, init_weights, metric,
+        if weights is None:
+            weights = Weights(*dims)
+            weights.init_pca()
+
+        super().__init__(dims, n_iter, eta, nhr, nh_shape, weights, metric,
                          seed=seed)
 
-    def fit(self, train_data: FloatArray, verbose: bool = False,
-            output_weights: bool = False) -> None:
-        """Fit the SOM to the ``training_data``
-
-        The method first initializes the weight vectors and then starts
-        training.
-        """
-        self._weights = self.init_weights(self.dims, train_data) # type: ignore
+    def fit(self, train_data: FloatArray, verbose: bool = False) -> None:
+        """Fit the SOM to the ``training_data``"""
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
 
@@ -313,18 +291,17 @@ class IncrementalMap(SomBase):
                 print(f"iter: {c_iter:2} -- eta: {np.round(c_eta, 4):<5} -- "
                       f"nh: {np.round(c_nhr, 5):<6}")
 
-            for i, fvect in enumerate(np.random.permutation(train_data)):
-                if output_weights:
-                    fname = f"weights/weights_{c_iter:05}_{i:05}.npy"
-                    with open(fname, "wb") as fobj:
-                        # see https://github.com/Teagum/awesom/issues/6 for the
-                        # following ingnores
-                        np.save(fobj, self._weights, allow_pickle=False) # type: ignore
-                bmu, err = utils.best_match(self.weights, fvect, self.metric) # type: ignore
+            for fvect in np.random.permutation(train_data):
+                bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
-                m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T # type: ignore
+                m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
                 neighbourhood = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
-                self._weights += c_eta * neighbourhood * (fvect - self._weights)
+                self._update_weights(fvect, neighbourhood, c_eta)
 
-            _, err = utils.best_match(self.weights, train_data, self.metric) # type: ignore
+            _, err = utils.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
+
+    def _update_weights(self, vec: FloatArray, neighbours: FloatArray,
+                        eta: float) -> None:
+        update = eta * neighbours * (vec - self._weights.vectors)
+        self._weights.vectors += update
