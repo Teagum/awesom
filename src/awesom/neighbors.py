@@ -26,10 +26,10 @@ def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float
         raise ValueError("Radius <= 0")
 
     dists = np.empty((grid.shape[0], 1), dtype=np.float64)
-    distance.cdist(center, grid, metric="sqeuclidean", out=dists)
+    distance.cdist(grid, center, metric="sqeuclidean", out=dists)
     np.divide(-dists, 2*radius**2, dists)
     np.exp(dists, out=dists)
-    return dists.T
+    return dists
 
 
 def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
@@ -48,17 +48,17 @@ def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
 
     rsq = radius**2
     dists = np.empty((grid.shape[0], 1), dtype=np.float64)
-    distance.cdist(center, grid, metric="sqeuclidean", out=dists)
-
-    fact = np.empty((grid.shape[0], 1), dtype=np.float64)
+    gauss = np.empty((grid.shape[0], 1), dtype=np.float64)
     norm = np.empty((grid.shape[0], 1), dtype=np.float64)
-    np.divide(dists, rsq, out=fact)
-    np.divide(fact, 2, out=norm)
-    np.subtract(1, fact, out=fact)
-    np.divide(-dists, norm, out=dists)
-    np.multiply(fact, dists, out=dists)
-    return dists.T
-    # return ((1-(dists/radius**2)) * np.exp(-dists/(2*radius**2))).T
+
+    distance.cdist(grid, center, metric="sqeuclidean", out=dists)
+
+    np.divide(-dists, rsq, out=norm)
+    np.divide(norm, 2, out=gauss)
+    np.add(1, norm, out=norm)
+    np.exp(gauss, out=dists)
+    np.multiply(norm, dists, out=dists)
+    return dists
 
 
 def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
@@ -75,8 +75,8 @@ def star(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
     Returns:
     """
     dists = np.empty((grid.shape[0], 1), dtype=np.float64)
-    distance.cdist(center, grid, "cityblock", out=dists)
-    return np.transpose(dists <= radius)
+    distance.cdist(grid, center, metric="cityblock", out=dists)
+    return np.less_equal(dists, radius, out=dists)
 
 
 def neighborhood(grid: IntArray, metric: str = "sqeuclidean") -> FloatArray:
@@ -111,8 +111,8 @@ def rect(grid: IntArray, center: npt.ArrayLike, radius: float) -> FloatArray:
         Two-dimensional array of in
     """
     dists = np.empty((grid.shape[0], 1), dtype=np.float64)
-    distance.cdist(center, grid, "chebychev", out=dists)
-    return np.transpose(dists <= radius)
+    distance.cdist(grid, center, metric="chebychev", out=dists)
+    return np.less_equal(dists, radius)
 
 
 def check_bounds(shape: Shape, point: Coord) -> bool:
