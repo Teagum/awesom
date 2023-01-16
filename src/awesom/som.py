@@ -25,7 +25,7 @@ class SomBase:
     """
     def __init__(self, dims: SomDims, n_iter: int, eta: float, nhr: float,
                  nh_shape: str, weights: Weights, metric: Metric = "euclidean",
-                 seed: float | None = None):
+                 seed: int | IntArray | None = None):
 
         self._grid = grid.SomGrid(dims[:2])
         self.n_features = dims[2]
@@ -35,6 +35,7 @@ class SomBase:
         self._qrr = np.zeros(n_iter)
         self._trr = np.zeros(n_iter)
         self._weights = weights
+        self._rng = np.random.default_rng(seed)
 
         try:
             self._neighbourhood = getattr(neighbors, nh_shape)
@@ -54,8 +55,6 @@ class SomBase:
         else:
             raise ValueError("Neighbourhood radius must be int > 0.")
 
-        if seed is not None:
-            np.random.seed(seed)
 
     @property
     def dims(self) -> SomDims:
@@ -285,13 +284,12 @@ class IncrementalMap(SomBase):
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
 
-        np.random.seed(10)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
             if verbose:
                 print(f"iter: {c_iter:2} -- eta: {np.round(c_eta, 4):<5} -- "
                       f"nh: {np.round(c_nhr, 5):<6}")
 
-            for fvect in np.random.permutation(train_data):
+            for fvect in self._rng.permutation(train_data):
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T

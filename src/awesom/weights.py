@@ -5,20 +5,22 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom.typing import FloatArray
+from awesom.typing import FloatArray, IntArray
 import awesom.utilities as utils
 
 
 class Weights:
     """Weights
     """
-    def __init__(self, dx: int, dy: int, dw: int) -> None:
+    def __init__(self, dx: int, dy: int, dw: int,
+                 seed: int | IntArray | None = None) -> None:
         self.dx = dx
         self.dy = dy
         self.dw = dw
         self.shape = (self.dx, self.dw, self.dw)
         self.n_units = self.dx * self.dy
         self.vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
+        self._rng = np.random.default_rng(seed)
 
 
     def __getitem__(self, key: Any) -> FloatArray:
@@ -40,7 +42,7 @@ class Weights:
                     coincides with principal component with the largest variance.
         """
         if training_data is None:
-            training_data = np.random.randint(-100, 100, (300, self.dw)).astype(float)
+            training_data = self._rng.integers(-100, 100, (300, self.dw)).astype(float)
         _, vects, trans_data = utils.pca(training_data, 2)
 
         if adapt:
@@ -69,9 +71,9 @@ class Weights:
             data_limits = np.column_stack((training_data.min(axis=0),
                                            training_data.max(axis=0)))
         else:
-            data_limits = np.random.randint(-10, 10, (self.dw, 2))
+            data_limits = self._rng.integers(-10, 10, (self.dw, 2))
             data_limits.sort()
-        weights = [np.random.uniform(dmin, dmax, self.dx*self.dy)
+        weights = [self._rng.uniform(dmin, dmax, self.dx*self.dy)
                    for (dmin, dmax) in data_limits]
         self.vectors[...] = np.column_stack(weights)
 
