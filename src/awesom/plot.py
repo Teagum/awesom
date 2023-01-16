@@ -8,7 +8,7 @@ import numpy as np
 import numpy.typing as npt
 
 from . import utilities as utils
-from . typealias import Array, Axis
+from . typealias import FloatArray, IntArray, Axis
 from . som import SomBase
 
 
@@ -64,7 +64,7 @@ def component(ax: Axis, som: SomBase, comp: int, outline: bool = False,
                      **props)
 
 
-def label_target(ax: Axis, som: SomBase, data: Array, target: Array, **kwargs: Any
+def label_target(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwargs: Any
                  ) -> None:
     """Add target labels for each bmu.
 
@@ -97,7 +97,7 @@ def qerror(ax: Axis, som: SomBase, **kwargs: Any) -> None:
     ax.plot(som.quantization_error, **props)
 
 
-def cluster_by(ax: Axis, som: SomBase, data: Array, target: Array, **kwargs: Any
+def cluster_by(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwargs: Any
                ) -> None:
     """Plot bmu colored by ``traget``.
 
@@ -118,8 +118,9 @@ def cluster_by(ax: Axis, som: SomBase, data: Array, target: Array, **kwargs: Any
     ax.scatter(*bmu_xy, **props)
 
 
-def hit_counts(ax: Axis, som: SomBase, transform: Callable | None = None, **kwargs: Any
-               ) -> None:
+def hit_counts(ax: Axis, som: SomBase,
+               transform: Callable[[IntArray], IntArray] | None = None
+               , **kwargs: Any) -> None:
     """Plot the winner histogram.
 
     Each unit is colored according to the number of times it was bmu.
@@ -142,8 +143,8 @@ def hit_counts(ax: Axis, som: SomBase, transform: Callable | None = None, **kwar
 
 
 def wire(ax: Axis, som: SomBase,
-         unit_size: float | Array = 100.0, line_width: float = 1.0,
-         highlight: Array | None = None, labels: bool = False,
+         unit_size: float | FloatArray = 100.0, line_width: float = 1.0,
+         highlight: FloatArray | None = None, labels: bool = False,
          unit_color: str = 'k', **kwargs: Any) -> None:
     # pylint: disable = too-many-locals, too-many-arguments
     """Plot the weight vectors of a SOM with two-dimensional feature space.
@@ -226,7 +227,7 @@ def wire(ax: Axis, som: SomBase,
     ax.set_aspect("equal")
 
 
-def data_2d(ax: Axis, data: Array, colors: Array, **kwargs: Any) -> None:
+def data_2d(ax: Axis, data: FloatArray, colors: FloatArray, **kwargs: Any) -> None:
     """Scatter plot a data set with two-dimensional feature space.
 
     This just the usual scatter command with some reasonable defaults.
@@ -249,7 +250,7 @@ def data_2d(ax: Axis, data: Array, colors: Array, **kwargs: Any) -> None:
     _ = ax.scatter(*data.T, **props)
 
 
-def _generic_contour(ax: Axis, data: Array, outline: bool = False,
+def _generic_contour(ax: Axis, data: FloatArray, outline: bool = False,
                      **kwargs: Any) -> None:
     """Contour plot.
 
