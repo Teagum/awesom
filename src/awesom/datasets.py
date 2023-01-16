@@ -5,7 +5,7 @@ Function for generating test and illustration data sets.
 import numpy as np
 from scipy import stats
 
-from . typealias import IntArray, FloatArray
+from awesom.typing import IntArray, FloatArray
 
 
 def norm_circle(n_classes: int, n_per_class: int, class_std: int,

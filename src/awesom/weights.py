@@ -5,7 +5,7 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom.typealias import FloatArray
+from awesom.typing import FloatArray
 import awesom.utilities as utils
 
 

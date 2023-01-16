@@ -7,8 +7,8 @@ from typing import Any, Callable
 import numpy as np
 import numpy.typing as npt
 
+from awesom.typing import FloatArray, IntArray, Axis
 from . import utilities as utils
-from . typealias import FloatArray, IntArray, Axis
 from . som import SomBase
 
 

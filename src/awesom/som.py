@@ -12,12 +12,12 @@ import numpy as np
 import numpy.typing as npt
 from scipy.spatial import distance
 
+from awesom.typing import FloatArray, IntArray, Metric, Shape, SomDims, FilePath
 from . import defaults
 from . import grid
 from . import neighbors
 from . import utilities as utils
 from . weights import Weights
-from . typealias import FloatArray, IntArray, Metric, Shape, SomDims, FilePath
 
 
 class SomBase:

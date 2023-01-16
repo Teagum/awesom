@@ -6,7 +6,7 @@ from typing import Generator
 import numpy as np
 from scipy.spatial import cKDTree
 
-from . typealias import IntArray, Shape
+from awesom.typing import IntArray, Shape
 
 
 class SomGrid:
