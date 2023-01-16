@@ -57,6 +57,6 @@ class SomGrid:
         idx = self.nhb_idx(radius, points)
         return self.pos[idx]
 
-    def __iter__(self) -> Generator:
+    def __iter__(self) -> Generator[tuple[int, int], None, None]:
         for row, col in zip(self.rows.flat, self.cols.flat):
             yield row, col
