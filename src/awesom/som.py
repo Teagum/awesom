@@ -284,7 +284,8 @@ class IncrementalMap(SomBase):
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
-                neighbourhood = self._neighbourhood(self._grid.pos, m_idx, c_nhr)
+                neighbourhood = self._neighbourhood(self._grid.pos, m_idx,
+                                                    c_nhr, self._grid._dists)
                 self._update_weights(fvect, neighbourhood, c_eta)
 
             _, err = utils.best_match(self.weights, train_data, self.metric)

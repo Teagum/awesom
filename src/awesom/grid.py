@@ -19,6 +19,7 @@ class SomGrid:
         self.pos = np.asarray(list(np.ndindex(shape)), dtype=int)
         self.tree = cKDTree(self.pos)
         self.rows, self.cols = np.indices(shape)
+        self._dists = np.empty((self.pos.shape[0], 1), dtype=np.float64)
 
     def nhb_idx(self, radius: float, points: IntArray | None = None) -> IntArray:
         """Compute the neighbourhood unit indices within ``radius``

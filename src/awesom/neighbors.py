@@ -11,8 +11,8 @@ from scipy.spatial import distance
 from awesom.typing import IntArray, FloatArray, Shape, Coord
 
 
-def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float
-             ) -> FloatArray:
+def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float,
+             out: FloatArray | None = None) -> FloatArray:
     """Compute n-dimensional Gaussian neighbourhood.
 
     Gaussian neighborhood smoothes the array.
@@ -25,11 +25,13 @@ def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float
     if radius <= 0:
         raise ValueError("Radius <= 0")
 
-    dists = np.empty((grid.shape[0], 1), dtype=np.float64)
-    distance.cdist(grid, center, metric="sqeuclidean", out=dists)
-    np.divide(-dists, 2*radius**2, dists)
-    np.exp(dists, out=dists)
-    return dists
+    if out is None:
+        out = np.empty((grid.shape[0], 1), dtype=np.float64)
+
+    distance.cdist(grid, center, metric="sqeuclidean", out=out)
+    np.divide(-out, 2*radius**2, out)
+    np.exp(out, out=out)
+    return out
 
 
 def mexican(grid: IntArray, center: npt.ArrayLike, radius: float
