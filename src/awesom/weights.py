@@ -5,7 +5,7 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom.typing import FloatArray, IntArray
+from awesom.typing import FloatArray, IntArray, FilePath
 import awesom.utilities as utils
 
 
@@ -90,3 +90,12 @@ class Weights:
         """
         nvt = self.dx * self.dy
         self.vectors[...] = utils.sample_st_matrix(nvt, self.dw)
+
+
+    def save_vectors(self, path: FilePath) -> None:
+        """Store weight vector in a portable `.npy` file
+
+        Args:
+            path:  File path
+        """
+        np.save(path, self.vectors, allow_pickle=False)

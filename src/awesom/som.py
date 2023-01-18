@@ -191,14 +191,6 @@ class SomBase:
         with path.open("wb") as file:
             pickle.dump(self, file)
 
-    def save_weights(self, path: FilePath) -> None:
-        """Save weights only as a portable `.npy` file
-
-        Args:
-            path:  File path
-        """
-        np.save(path, self.weights, allow_pickle=False)
-
     def transform(self, data: FloatArray) -> FloatArray:
         """Transform each item in ``data`` to feature space.
 
