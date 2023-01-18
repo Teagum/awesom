@@ -6,12 +6,11 @@ Self-organizing map base classes
 
 import pathlib
 import pickle
-from typing import Any
 
 import numpy as np
-import numpy.typing as npt
 from scipy.spatial import distance
 
+from awesom.exceptions import NotCalibratedError
 from awesom.typing import FloatArray, IntArray, Metric, Shape, SomDims, FilePath
 from . import defaults
 from . import grid
@@ -36,6 +35,7 @@ class SomBase:
         self._trr = np.zeros(n_iter)
         self._weights = weights
         self._rng = np.random.default_rng(seed)
+        self._calibration: IntArray | None = None
 
         try:
             self._neighbourhood = getattr(neighbors, nh_shape)
@@ -111,20 +111,16 @@ class SomBase:
         """Return topographic error."""
         return self._trr
 
-    def calibrate(self, data: FloatArray, target: npt.NDArray[Any]
-                  ) -> npt.NDArray[Any]:
+    def calibrate(self, data: FloatArray, target: IntArray) -> None:
         """Retrieve the target value of the best matching input data vector
         for each unit weight vector.
 
         Args:
             data:     Input data set.
             target:  Target labels.
-
-        Returns:
-            Array of target values.
         """
         bm_dv, _ = utils.best_match(data, self.weights, self.metric)
-        return target[bm_dv]
+        self._calibration = target[bm_dv]
 
     def distribute(self, data: FloatArray) -> dict[int, list[int]]:
         """Distribute the vectors of ``data`` on the SOM.
@@ -180,8 +176,10 @@ class SomBase:
         Returns:
             One-dimensional array of indices.
         """
+        if self._calibration is None:
+            raise NotCalibratedError("Cannot predict fromm not calibrated SOM")
         bmi, _ = utils.best_match(self.weights, data, self.metric)
-        return bmi
+        return self._calibration[bmi]
 
     def save(self, path: FilePath) -> None:
         """Save SOM object to pickle file
@@ -212,7 +210,7 @@ class SomBase:
         Returns:
             Position of each data item in the feature space.
         """
-        bmi = self.predict(data)
+        bmi = self.match_flat(data)
         return self._weights[bmi]
 
     def umatrix(self, radius: int = 1, scale: bool = True, norm: bool = True
@@ -279,7 +277,8 @@ class IncrementalMap(SomBase):
         super().__init__(dims, n_iter, eta, nhr, nh_shape, weights, metric,
                          seed=seed)
 
-    def fit(self, train_data: FloatArray, verbose: bool = False) -> None:
+    def fit(self, train_data: FloatArray, target: IntArray | None = None,
+            verbose: bool = False) -> None:
         """Fit the SOM to the ``training_data``"""
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
@@ -298,6 +297,9 @@ class IncrementalMap(SomBase):
 
             _, err = utils.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
+
+        if target is not None:
+            self.calibrate(train_data, target)
 
     def _update_weights(self, vec: FloatArray, neighbours: FloatArray,
                         eta: float) -> None:
