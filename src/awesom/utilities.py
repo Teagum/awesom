@@ -64,8 +64,8 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
             yield start * np.exp(coef*stp)
 
 
-def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
-               ) -> tuple[IntArray, FloatArray]:
+def best_match(weights: FloatArray, inp: FloatArray, metric: Metric,
+               out: FloatArray | None = None) -> tuple[IntArray, FloatArray]:
     """Compute the best matching unit of ``weights`` for each
     element in ``inp``.
 
@@ -99,8 +99,7 @@ def best_match(weights: FloatArray, inp: FloatArray, metric: Metric
         msg = (f"Array ``inp`` has {weights.ndim} dimensions, it "
                "has to have one or two dimensions.")
         raise ValueError(msg)
-
-    dists = distance.cdist(weights, inp, metric)
+    dists = distance.cdist(weights, inp, metric, out=out)
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
