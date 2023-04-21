@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from matplotlib import axes
 import numpy as np
+import numpy.typing as npt
 
 
 Array = np.ndarray
@@ -21,3 +22,7 @@ SomDims = tuple[int, int, int]
 Metric = str | Callable[[Array, Array], float]
 
 FilePath = pathlib.Path | str
+
+DistFunc = Callable[
+    [IntArray, npt.ArrayLike, float, FloatArray | None],
+    FloatArray]
