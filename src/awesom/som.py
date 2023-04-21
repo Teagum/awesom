@@ -296,12 +296,12 @@ class IncrementalMap(SomBase):
             self.calibrate(train_data, target)
 
     def _update_weights(self, vec: FloatArray, center: npt.ArrayLike, radius:
-                        float, eta: float, buffer) -> None:
+                        float, eta: float, buffer: FloatArray) -> None:
         #update = eta * neighbours * (vec - self._weights.vectors)
         #self._weights.vectors += update
         center = np.asarray(center).astype(np.float64)
-        self.grid._gauss_neighbors(center, radius)
+        self.grid.neighbourhood_distances(center, radius, self._neighbourhood)
         np.subtract(vec, self._weights.vectors, out=buffer)
-        np.multiply(self.grid._dists, buffer, out=buffer)
+        np.multiply(self.grid.dists, buffer, out=buffer)
         np.multiply(eta, buffer, out=buffer)
         np.add(buffer, self._weights.vectors, out=self._weights.vectors)
