@@ -1,12 +1,14 @@
 """
 Grid for Self-organizing maps
 """
+from functools import cache, lru_cache
 from typing import Generator
 
 import numpy as np
 from scipy.spatial import cKDTree
 
-from awesom.typing import IntArray, Shape
+from awesom.typing import IntArray, Shape, FloatArray
+from awesom.neighbors import gaussian
 
 
 class SomGrid:
@@ -57,6 +59,13 @@ class SomGrid:
             points = self.pos
         idx = self.nhb_idx(radius, points)
         return self.pos[idx]
+
+    def neighbourhood_distances(self, distance_func):
+        pass
+
+    def _gauss_neighbors(self, center: FloatArray, radius: float,
+                         ) -> FloatArray:
+        return gaussian(self.pos, center, radius, self._dists)
 
     def __iter__(self) -> Generator[tuple[int, int], None, None]:
         for row, col in zip(self.rows.flat, self.cols.flat):

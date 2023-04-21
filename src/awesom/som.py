@@ -8,6 +8,7 @@ import pathlib
 import pickle
 
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import distance
 
 from awesom.exceptions import NotCalibratedError
@@ -275,6 +276,7 @@ class IncrementalMap(SomBase):
         eta_ = utils.decrease_linear(self.init_eta, self.n_iter, defaults.FINAL_ETA)
         nhr_ = utils.decrease_expo(self.init_nhr, self.n_iter, defaults.FINAL_NHR)
 
+        _update_buffer = np.empty_like(self.weights)
         for (c_iter, c_eta, c_nhr) in zip(range(self.n_iter), eta_, nhr_):
             if verbose:
                 print(f"iter: {c_iter:2} -- eta: {np.round(c_eta, 4):<5} -- "
@@ -284,9 +286,8 @@ class IncrementalMap(SomBase):
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
-                neighbourhood = self._neighbourhood(self._grid.pos, m_idx,
-                                                    c_nhr, self._grid._dists)
-                self._update_weights(fvect, neighbourhood, c_eta)
+                #self._neighbourhood(self._grid.pos, m_idx, c_nhr, self._grid._dists)
+                self._update_weights(fvect, m_idx, c_nhr, c_eta, _update_buffer)
 
             _, err = utils.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
@@ -294,7 +295,13 @@ class IncrementalMap(SomBase):
         if target is not None:
             self.calibrate(train_data, target)
 
-    def _update_weights(self, vec: FloatArray, neighbours: FloatArray,
-                        eta: float) -> None:
-        update = eta * neighbours * (vec - self._weights.vectors)
-        self._weights.vectors += update
+    def _update_weights(self, vec: FloatArray, center: npt.ArrayLike, radius:
+                        float, eta: float, buffer) -> None:
+        #update = eta * neighbours * (vec - self._weights.vectors)
+        #self._weights.vectors += update
+        center = np.asarray(center).astype(np.float64)
+        self.grid._gauss_neighbors(center, radius)
+        np.subtract(vec, self._weights.vectors, out=buffer)
+        np.multiply(self.grid._dists, buffer, out=buffer)
+        np.multiply(eta, buffer, out=buffer)
+        np.add(buffer, self._weights.vectors, out=self._weights.vectors)
