@@ -3,13 +3,13 @@ Utilities for self.organizing maps.
 """
 
 import itertools
-from typing import Iterable, Iterator
+from typing import cast, Iterable, Iterator
 
 import numpy as np
 from scipy.spatial import distance
 from scipy import stats
 
-from . typealias import Array, Metric, SomDims
+from awesom.typing import IntArray, FloatArray, Metric
 
 
 def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
@@ -25,7 +25,7 @@ def grid_iter(n_rows: int, n_cols: int) -> Iterator[tuple[int, int]]:
     return itertools.product(range(n_rows), range(n_cols))
 
 
-def grid(n_rows: int, n_cols: int) -> Array:
+def grid(n_rows: int, n_cols: int) -> IntArray:
     """Compute grid indices of a two-dimensional array.
 
     Args:
@@ -35,7 +35,7 @@ def grid(n_rows: int, n_cols: int) -> Array:
     Returns:
         Two-dimensional array in which each row represents an multi-index.
     """
-    return np.array(list(grid_iter(n_rows, n_cols)))
+    return np.array(list(grid_iter(n_rows, n_cols)), dtype=int)
 
 
 def decrease_linear(start: float, step: float, stop: float = 1.0
@@ -64,8 +64,8 @@ def decrease_expo(start: float, step: float, stop: float = 1.0
             yield start * np.exp(coef*stp)
 
 
-def best_match(weights: Array, inp: Array, metric: Metric
-               ) -> tuple[Array, Array]:
+def best_match(weights: FloatArray, inp: FloatArray, metric: Metric,
+               out: FloatArray | None = None) -> tuple[IntArray, FloatArray]:
     """Compute the best matching unit of ``weights`` for each
     element in ``inp``.
 
@@ -99,117 +99,60 @@ def best_match(weights: Array, inp: Array, metric: Metric
         msg = (f"Array ``inp`` has {weights.ndim} dimensions, it "
                "has to have one or two dimensions.")
         raise ValueError(msg)
-
-    dists = distance.cdist(weights, inp, metric)
+    dists = distance.cdist(weights, inp, metric, out=out)
     return dists.argmin(axis=0), dists.min(axis=0)
 
 
-def sample_pca(dims: SomDims, data: Array | None = None, **kwargs) -> Array:
-    """Compute initial SOM weights by sampling from the first two principal
-    components of the input data.
+def sample_st_matrix(n_mat: int, size: int) -> FloatArray:
+    """Sample stochastic matrices from Dirichlet distribution
+
+    The distribution is configured to place five times more probability mass on
+    the main diagonal than on the remaining elements.
 
     Args:
-        dims:   Dimensions of SOM.
-        data:   Input data set.
-        adapt:  If ``True``, the largest value of ``shape`` is applied to the
-                principal component with the largest sigular value. This
-                orients the map, such that map dimension with the most units
-                coincides with principal component with the largest variance.
+        n_mat:  Number of matrices
+        size:   Number of matirx row/cols
 
     Returns:
-        Array of SOM weights.
+        Two-dimensional array. Each row corresponds to a flattened matrix.
     """
-    n_rows, n_cols, n_feats = dims
+    if n_mat < 1:
+        raise ValueError("n_mat < 1")
 
-    if data is None:
-        data = np.random.randint(-100, 100, (300, n_feats))
-    _, vects, trans_data = pca(data, 2)
-    data_min = trans_data.min(axis=0)
-    data_max = trans_data.max(axis=0)
-    if "adapt" in kwargs and kwargs['adapt'] is True:
-        shape = tuple(sorted((n_rows, n_cols), reverse=True))
-    else:
-        shape = (n_rows, n_cols)
-    dim_x = np.linspace(data_min[0], data_max[0], shape[0])
-    dim_y = np.linspace(data_min[1], data_max[1], shape[1])
-    grid_x, grid_y = np.meshgrid(dim_x, dim_y)
-    points = np.vstack((grid_x.ravel(), grid_y.ravel()))
-    weights = points.T @ vects + data.mean(axis=0)
-    return weights
+    if size < 2:
+        raise ValueError("size < 2")
+
+    pfact = 5.0
+    alpha = np.ones((size, size), dtype=np.float64)
+    np.fill_diagonal(alpha, pfact)
+
+    samples = [stats.dirichlet(a).rvs(n_mat) for a in alpha]
+    return np.hstack(samples, dtype=np.float64)
 
 
-def sample_rnd(dims: SomDims, data: Array | None = None) -> Array:
-    """Compute initial SOM weights by sampling uniformly from the data space.
+def sample_st_vector(n_vectors: int, size: int) -> FloatArray:
+    """Sample stochastic vectors
+
+    Sample random stochastic vectors with uniformly distributed probability
+    mass. The sum of each vector equals 1.0 and each element is a number
+    between 0.0 and 1.0.
 
     Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set. If ``None``, sample from [-10, 10].
+        n_vectors: Number of vectors
+        size:      Vector size
 
     Returns:
-        Array of SOM weights.
+        Two-dimensional array, whose rows correspond to vectors
     """
-    n_rows, n_cols, n_feats = dims
-    n_units = n_rows * n_cols
-    if data is not None:
-        data_limits = np.column_stack((data.min(axis=0), data.max(axis=0)))
-    else:
-        data_limits = np.random.randint(-10, 10, (n_feats, 2))
-        data_limits.sort()
-    weights = [np.random.uniform(dmin, dmax, n_units)
-               for (dmin, dmax) in data_limits]
-    return np.column_stack(weights)
+    if n_vectors < 1:
+        raise ValueError("``n_vectors < 0")
 
+    if size < 1:
+        raise ValueError("``size`` < 1")
 
-def sample_stm(dims: SomDims, data: Array | None = None) -> Array:
-    """Compute initial SOM weights by sampling stochastic matrices from
-    Dirichlet distribution.
-
-    The rows of each n by n stochastic matrix are sampes drawn from the
-    Dirichlet distribution, where n is the number of rows and cols of the
-    matrix. The diagonal elemets of the matrices are set to twice the
-    probability of the remaining elements.
-    The square root of the weight vectors' size must be a real integer.
-
-    Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set.
-
-    Returns:
-        Array of SOM weights.
-
-    Notes:
-        Each row of the output array is to be considered a flattened
-        stochastic matrix, such that each ``N = sqrt(data.shape[1])`` values
-        are a discrete probability distribution forming the ``N`` th row of
-        the matrix.
-    """
-    n_rows, n_cols, n_feats = dims
-    n_states = np.sqrt(n_feats)
-    if bool(n_states - int(n_states)):
-        msg = (f"Weight vector with {n_feats} elements is not "
-               "reshapeable to square matrix.")
-        raise ValueError(msg)
-
-    n_states = int(n_states)
-    n_units = n_rows * n_cols
-    alpha = np.random.randint(1, 10, (n_states, n_states))
-    st_matrix = np.hstack([stats.dirichlet(a).rvs(size=n_units)
-                           for a in alpha])
-    return st_matrix
-
-
-def sample_hist(dims: SomDims, data: Array | None = None) -> Array:
-    """Sample sum-normalized histograms.
-
-    Args:
-        dims:  Dimensions of SOM.
-        data:  Input data set.
-
-    Returns:
-        Two-dimensional array in which each row is a historgram.
-    """
-    n_rows, n_cols, n_feats = dims
-    return stats.dirichlet(np.ones(n_feats)).rvs(n_rows*n_cols)
+    alpha = np.ones(size, dtype=np.float64)
+    samples = stats.dirichlet(alpha).rvs(n_vectors)
+    return np.asanyarray(samples, dtype=np.float64)
 
 
 def distribute(bmu_idx: Iterable[int], n_units: int
@@ -236,7 +179,8 @@ def distribute(bmu_idx: Iterable[int], n_units: int
     return unit_matches
 
 
-def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
+def pca(data: FloatArray, n_comps: int = 2
+        ) -> tuple[FloatArray, FloatArray, FloatArray]:
     """Perfom principal component analysis
 
     Interanlly, ``data`` will be centered but not scaled.
@@ -259,8 +203,8 @@ def pca(data: Array, n_comps: int = 2) -> tuple[Array, Array, Array]:
     return vals, vects, data_centered @ vects.T
 
 
-def scale(arr: Array, new_min: int = 0, new_max: int = 1, axis: int = -1
-          ) -> Array:
+def scale(arr: FloatArray, new_min: int = 0, new_max: int = 1, axis: int = -1
+          ) -> FloatArray:
     """Scale ``arr`` between ``new_min`` and ``new_max``
 
     Args:
@@ -277,11 +221,4 @@ def scale(arr: Array, new_min: int = 0, new_max: int = 1, axis: int = -1
     fact = (arr-xmin) / (xmax - xmin)
     out = fact * (new_max - new_min) + new_min
 
-    return out
-
-
-weight_initializer = {
-    'rnd': sample_rnd,
-    'stm': sample_stm,
-    'pca': sample_pca,
-    'hist': sample_hist}
+    return cast(FloatArray, out)

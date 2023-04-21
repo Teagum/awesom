@@ -1,10 +1,14 @@
 """
 Grid for Self-organizing maps
 """
+from functools import cache, lru_cache
+from typing import Generator
+
 import numpy as np
 from scipy.spatial import cKDTree
 
-from . typealias import Array, Shape
+from awesom.typing import IntArray, Shape, FloatArray
+from awesom.neighbors import gaussian
 
 
 class SomGrid:
@@ -17,8 +21,9 @@ class SomGrid:
         self.pos = np.asarray(list(np.ndindex(shape)), dtype=int)
         self.tree = cKDTree(self.pos)
         self.rows, self.cols = np.indices(shape)
+        self._dists = np.empty((self.pos.shape[0], 1), dtype=np.float64)
 
-    def nhb_idx(self, radius: float, points: Array | None = None) -> Array:
+    def nhb_idx(self, radius: float, points: IntArray | None = None) -> IntArray:
         """Compute the neighbourhood unit indices within ``radius``
 
         If ``points`` is given, return the neighbourhood around each unit in
@@ -36,7 +41,7 @@ class SomGrid:
             points = self.pos
         return np.asarray(self.tree.query_ball_point(points, radius, np.inf))
 
-    def nhb(self, radius: float, points: Array | None = None) -> Array:
+    def nhb(self, radius: float, points: IntArray | None = None) -> IntArray:
         """Compute neighbourhood within ``radius``
 
         If ``points`` is given, return the neighbourhood around each unit in
@@ -55,6 +60,13 @@ class SomGrid:
         idx = self.nhb_idx(radius, points)
         return self.pos[idx]
 
-    def __iter__(self):
+    def neighbourhood_distances(self, distance_func):
+        pass
+
+    def _gauss_neighbors(self, center: FloatArray, radius: float,
+                         ) -> FloatArray:
+        return gaussian(self.pos, center, radius, self._dists)
+
+    def __iter__(self) -> Generator[tuple[int, int], None, None]:
         for row, col in zip(self.rows.flat, self.cols.flat):
             yield row, col

@@ -2,16 +2,18 @@
 Plotting functions for SOMs.
 """
 
-from typing import Callable, Optional, Union
+from typing import Any, Callable
 
 import numpy as np
 import numpy.typing as npt
 
+from awesom.typing import FloatArray, IntArray, Axis
 from . import utilities as utils
-from . typealias import Array, Axis
+from . som import SomBase
 
 
-def umatrix(ax: Axis, som, outline: bool = False, **kwargs) -> None:
+def umatrix(ax: Axis, som: SomBase, outline: bool = False, **kwargs: Any
+            ) -> None:
     """Plot the U-matrix.
 
     Args:
@@ -28,7 +30,7 @@ def umatrix(ax: Axis, som, outline: bool = False, **kwargs) -> None:
     _generic_contour(ax, som.umatrix(), outline, **props)
 
 
-def umatrix3d(ax: Axis, som, **kwargs) -> None:
+def umatrix3d(ax: Axis, som: SomBase, **kwargs: Any) -> None:
     """Plot the U-matrix in three dimensions.
 
     Args:
@@ -45,8 +47,8 @@ def umatrix3d(ax: Axis, som, **kwargs) -> None:
     ax.plot_surface(*np.mgrid[:som.dx, :som.dy], som.umatrix(), **props)
 
 
-def component(ax: Axis, som, comp: int, outline: bool = False,
-              **kwargs) -> None:
+def component(ax: Axis, som: SomBase, comp: int, outline: bool = False,
+              **kwargs: Any) -> None:
     """Plot a component plane.
 
     Args:
@@ -62,7 +64,8 @@ def component(ax: Axis, som, comp: int, outline: bool = False,
                      **props)
 
 
-def label_target(ax: Axis, som, data: Array, target: Array, **kwargs) -> None:
+def label_target(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwargs: Any
+                 ) -> None:
     """Add target labels for each bmu.
 
     Args:
@@ -84,7 +87,7 @@ def label_target(ax: Axis, som, data: Array, target: Array, **kwargs) -> None:
         ax.text(x, y, t, fontdict=props)
 
 
-def qerror(ax: Axis, som, **kwargs) -> None:
+def qerror(ax: Axis, som: SomBase, **kwargs: Any) -> None:
     """Plot quantization error."""
     props = {
         'lw': 3,
@@ -94,8 +97,8 @@ def qerror(ax: Axis, som, **kwargs) -> None:
     ax.plot(som.quantization_error, **props)
 
 
-def cluster_by(ax: Axis, som, data: Array, target: Array,
-               **kwargs) -> None:
+def cluster_by(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwargs: Any
+               ) -> None:
     """Plot bmu colored by ``traget``.
 
     Args:
@@ -115,8 +118,9 @@ def cluster_by(ax: Axis, som, data: Array, target: Array,
     ax.scatter(*bmu_xy, **props)
 
 
-def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
-               **kwargs) -> None:
+def hit_counts(ax: Axis, som: SomBase,
+               transform: Callable[[IntArray], IntArray] | None = None
+               , **kwargs: Any) -> None:
     """Plot the winner histogram.
 
     Each unit is colored according to the number of times it was bmu.
@@ -138,12 +142,10 @@ def hit_counts(ax: Axis, som, transform: Optional[Callable] = None,
     ax.imshow(data, **props)
 
 
-def wire(ax: Axis, som,
-         unit_size: Union[float, Array] = 100.0,
-         line_width: float = 1.0,
-         highlight: Optional[Array] = None, labels: bool = False,
-         unit_color: str = 'k',
-         **kwargs) -> None:
+def wire(ax: Axis, som: SomBase,
+         unit_size: float | FloatArray = 100.0, line_width: float = 1.0,
+         highlight: FloatArray | None = None, labels: bool = False,
+         unit_color: str = 'k', **kwargs: Any) -> None:
     # pylint: disable = too-many-locals, too-many-arguments
     """Plot the weight vectors of a SOM with two-dimensional feature space.
 
@@ -225,8 +227,7 @@ def wire(ax: Axis, som,
     ax.set_aspect("equal")
 
 
-def data_2d(ax: Axis, data: Array, colors: Array,
-            **kwargs) -> None:
+def data_2d(ax: Axis, data: FloatArray, colors: FloatArray, **kwargs: Any) -> None:
     """Scatter plot a data set with two-dimensional feature space.
 
     This just the usual scatter command with some reasonable defaults.
@@ -249,8 +250,8 @@ def data_2d(ax: Axis, data: Array, colors: Array,
     _ = ax.scatter(*data.T, **props)
 
 
-def _generic_contour(ax: Axis, data: Array, outline: bool = False,
-                     **kwargs) -> None:
+def _generic_contour(ax: Axis, data: FloatArray, outline: bool = False,
+                     **kwargs: Any) -> None:
     """Contour plot.
 
     Args:
