@@ -1,7 +1,6 @@
 """
 Neighborhood computations
 """
-from functools import cache
 from typing import cast
 import numpy as np
 import numpy.typing as npt
@@ -29,7 +28,8 @@ def gaussian(grid: IntArray, center: npt.ArrayLike, radius: float,
         out = np.empty((grid.shape[0], 1), dtype=np.float64)
 
     distance.cdist(grid, center, metric="sqeuclidean", out=out)
-    np.divide(-out, 2*radius**2, out)
+    np.multiply(out, -1, out=out)
+    np.divide(out, 2*radius**2, out)
     np.exp(out, out=out)
     return out
 
