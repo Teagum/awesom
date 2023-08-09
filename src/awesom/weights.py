@@ -27,6 +27,12 @@ class Weights:
         return cast(FloatArray, self._vectors[key])
 
 
+    @property
+    def vectors(self) -> FloatArray:
+        """Return weight vectors"""
+        return self._vectors
+
+
     def init_pca(self, training_data: FloatArray | None = None,
                  adapt: bool = True) -> None:
         """Initialize weights using PCA method
