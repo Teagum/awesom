@@ -297,6 +297,7 @@ class IncrementalMap(SomBase):
 
     def _update_weights(self, vec: FloatArray, center: npt.ArrayLike, radius:
                         float, eta: float, buffer: FloatArray) -> None:
+
         #update = eta * neighbours * (vec - self._weights.vectors)
         #self._weights.vectors += update
         center = np.asarray(center).astype(np.float64)
@@ -304,4 +305,4 @@ class IncrementalMap(SomBase):
         np.subtract(vec, self._weights.vectors, out=buffer)
         np.multiply(self.grid.dists, buffer, out=buffer)
         np.multiply(eta, buffer, out=buffer)
-        np.add(buffer, self._weights.vectors, out=self._weights.vectors)
+        self._weights.update(buffer)
