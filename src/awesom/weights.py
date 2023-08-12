@@ -5,8 +5,8 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom.typing import FloatArray, IntArray, FilePath
 import awesom.utilities as utils
+from awesom.typing import FilePath, FloatArray, IntArray
 
 
 class Weights:
@@ -31,6 +31,23 @@ class Weights:
     def vectors(self) -> FloatArray:
         """Return weight vectors"""
         return self._vectors
+
+
+    def update(self, buff: FloatArray) -> None:
+        """Update the weight vectors
+
+        Args:
+            buff:   Weight updates
+        """
+        if buff.dtype != self._vectors.dtype:
+            raise TypeError(f"Update buffer has incompatible type <{buff.dtype}>. "
+                            f"Expected <{self._vectors.dtype}>.")
+
+        if buff.shape != self._vectors.shape:
+            raise TypeError(f"Update buffer has incompatible shape <{buff.shape}>. "
+                            f"Expected <{self._vectors.shape}>")
+
+        np.add(buff, self._vectors, out=self._vectors)
 
 
     def init_pca(self, training_data: FloatArray | None = None,
