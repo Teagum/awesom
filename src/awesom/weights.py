@@ -5,8 +5,8 @@ from typing import Any, cast
 
 import numpy as np
 
-from awesom.typing import FloatArray, IntArray, FilePath
 import awesom.utilities as utils
+from awesom.typing import FilePath, FloatArray, IntArray
 
 
 class Weights:
@@ -19,12 +19,35 @@ class Weights:
         self.dw = dw
         self.shape = (self.dx, self.dw, self.dw)
         self.n_units = self.dx * self.dy
-        self.vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
+        self._vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
         self._rng = np.random.default_rng(seed)
 
 
     def __getitem__(self, key: Any) -> FloatArray:
-        return cast(FloatArray, self.vectors[key])
+        return cast(FloatArray, self._vectors[key])
+
+
+    @property
+    def vectors(self) -> FloatArray:
+        """Return weight vectors"""
+        return self._vectors
+
+
+    def update(self, buff: FloatArray) -> None:
+        """Update the weight vectors
+
+        Args:
+            buff:   Weight updates
+        """
+        if buff.dtype != self._vectors.dtype:
+            raise TypeError(f"Update buffer has incompatible type <{buff.dtype}>. "
+                            f"Expected <{self._vectors.dtype}>.")
+
+        if buff.shape != self._vectors.shape:
+            raise TypeError(f"Update buffer has incompatible shape <{buff.shape}>. "
+                            f"Expected <{self._vectors.shape}>")
+
+        np.add(buff, self._vectors, out=self._vectors)
 
 
     def init_pca(self, training_data: FloatArray | None = None,
@@ -57,7 +80,7 @@ class Weights:
 
         grid_x, grid_y = np.meshgrid(dim_x, dim_y)
         points = np.vstack((grid_x.ravel(), grid_y.ravel()))
-        self.vectors[...] = points.T @ vects + training_data.mean(axis=0)
+        self._vectors[...] = points.T @ vects + training_data.mean(axis=0)
 
 
     def init_rnd(self, training_data: FloatArray | None = None) -> None:
@@ -75,21 +98,21 @@ class Weights:
             data_limits.sort()
         weights = [self._rng.uniform(dmin, dmax, self.dx*self.dy)
                    for (dmin, dmax) in data_limits]
-        self.vectors[...] = np.column_stack(weights)
+        self._vectors[...] = np.column_stack(weights)
 
 
     def init_stv(self) -> None:
         """Initialize with stochastic vectors
         """
         nvt = self.dx * self.dy
-        self.vectors[...] = utils.sample_st_vector(nvt, self.dw)
+        self._vectors[...] = utils.sample_st_vector(nvt, self.dw)
 
 
     def init_stm(self) -> None:
         """Initialize with stochastic matrices
         """
         nvt = self.dx * self.dy
-        self.vectors[...] = utils.sample_st_matrix(nvt, self.dw)
+        self._vectors[...] = utils.sample_st_matrix(nvt, self.dw)
 
 
     def save_vectors(self, path: FilePath) -> None:
@@ -98,4 +121,4 @@ class Weights:
         Args:
             path:  File path
         """
-        np.save(path, self.vectors, allow_pickle=False)
+        np.save(path, self._vectors, allow_pickle=False)

@@ -286,8 +286,8 @@ class IncrementalMap(SomBase):
                 bmu, err = utils.best_match(self.weights, fvect, self.metric)
                 self._hit_counts[bmu] += 1
                 m_idx = np.atleast_2d(np.unravel_index(bmu, self.shape)).T
-                #self._neighbourhood(self._grid.pos, m_idx, c_nhr, self._grid._dists)
-                self._update_weights(fvect, m_idx, c_nhr, c_eta, _update_buffer)
+                self._compute_update(fvect, m_idx, c_nhr, c_eta, _update_buffer)
+                self._weights.update(_update_buffer)
 
             _, err = utils.best_match(self.weights, train_data, self.metric)
             self._qrr[c_iter] = err.sum() / train_data.shape[0]
@@ -295,13 +295,11 @@ class IncrementalMap(SomBase):
         if target is not None:
             self.calibrate(train_data, target)
 
-    def _update_weights(self, vec: FloatArray, center: npt.ArrayLike, radius:
+    def _compute_update(self, vec: FloatArray, center: npt.ArrayLike, radius:
                         float, eta: float, buffer: FloatArray) -> None:
-        #update = eta * neighbours * (vec - self._weights.vectors)
-        #self._weights.vectors += update
+
         center = np.asarray(center).astype(np.float64)
         self.grid.neighbourhood_distances(center, radius, self._neighbourhood)
         np.subtract(vec, self._weights.vectors, out=buffer)
         np.multiply(self.grid.dists, buffer, out=buffer)
         np.multiply(eta, buffer, out=buffer)
-        np.add(buffer, self._weights.vectors, out=self._weights.vectors)
