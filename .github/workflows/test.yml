@@ -8,14 +8,32 @@ jobs:
       matrix:
         platform: ["macos-latest", "windows-latest", "ubuntu-latest"]
     runs-on: ${{ matrix.platform }}
+
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Install tox
+        run: pipx install tox
+
       - uses: actions/setup-python@v4
         with:
           python-version: |
             3.10
             3.11
-      - run: python3 -m pip install --user pipx
-      - run: python3 -m pipx ensurepath
-      - run: pipx install tox
-      - run: tox r
+          cache: poetry
+
+      - name: Checkout toolcache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .hypothesis
+            .pytest-cache
+            .tox
+          key: test-${{ matrix.platform }}-toolcache
+
+      - name: Execute tests
+        run: tox r
+
