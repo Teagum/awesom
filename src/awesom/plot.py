@@ -94,7 +94,7 @@ def qerror(ax: Axis, som: SomBase, **kwargs: Any) -> None:
         'alpha': .8,
         }
     props.update(kwargs)
-    ax.plot(som.quantization_error, **props)
+    ax.plot(som.quantization_error, **props)    # type: ignore
 
 
 def cluster_by(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwargs: Any
@@ -115,7 +115,7 @@ def cluster_by(ax: Axis, som: SomBase, data: FloatArray, target: IntArray, **kwa
     props.update(kwargs)
     bmu = som.match(data)
     bmu_xy = np.fliplr(np.atleast_2d(bmu)).T
-    ax.scatter(*bmu_xy, **props)
+    ax.scatter(*bmu_xy, **props)    # type: ignore
 
 
 def hit_counts(ax: Axis, som: SomBase,
@@ -139,7 +139,7 @@ def hit_counts(ax: Axis, som: SomBase,
     data = som.hit_counts.reshape(som.shape)
     if transform is not None:
         data = transform(data)
-    ax.imshow(data, **props)
+    ax.imshow(data, **props)    # type: ignore
 
 
 def wire(ax: Axis, som: SomBase,
@@ -204,10 +204,10 @@ def wire(ax: Axis, som: SomBase,
     rsw = som.weights.reshape(*som.shape, 2)
     v_wx, v_wy = rsw.T
     h_wx, h_wy = np.rollaxis(rsw, 1).T
-    _vlines = ax.plot(v_wx, v_wy, **line_props)
-    _hlines = ax.plot(h_wx, h_wy, **line_props)
-    _bgmarker = ax.scatter(v_wx, v_wy, **marker_bg_props)
-    _umarker = ax.scatter(v_wx, v_wy, **marker_hl_props)
+    _vlines = ax.plot(v_wx, v_wy, **line_props)    # type: ignore
+    _hlines = ax.plot(h_wx, h_wy, **line_props)    # type: ignore
+    _bgmarker = ax.scatter(v_wx, v_wy, **marker_bg_props)    # type: ignore
+    _umarker = ax.scatter(v_wx, v_wy, **marker_hl_props)     # type: ignore
 
     font = {'fontsize': 4,
             'va': "bottom",
@@ -247,7 +247,7 @@ def data_2d(ax: Axis, data: FloatArray, colors: FloatArray, **kwargs: Any) -> No
         'edgecolors': "None",
         's': 10}
     props.update(kwargs)
-    _ = ax.scatter(*data.T, **props)
+    _ = ax.scatter(*data.T, **props)    # type: ignore
 
 
 def _generic_contour(ax: Axis, data: FloatArray, outline: bool = False,
