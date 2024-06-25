@@ -7,7 +7,7 @@ from typing import Any, Callable
 import numpy as np
 import numpy.typing as npt
 
-from awesom.typing import FloatArray, IntArray, Axis
+from awesom.typing import FloatArray, IntArray, Axis, Axes3D
 from . import utilities as utils
 from . som import SomBase
 
@@ -30,7 +30,7 @@ def umatrix(ax: Axis, som: SomBase, outline: bool = False, **kwargs: Any
     _generic_contour(ax, som.umatrix(), outline, **props)
 
 
-def umatrix3d(ax: Axis, som: SomBase, **kwargs: Any) -> None:
+def umatrix3d(ax: Axes3D, som: SomBase, **kwargs: Any) -> None:
     """Plot the U-matrix in three dimensions.
 
     Args:
