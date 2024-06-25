@@ -10,7 +10,6 @@ import numpy as np
 import numpy.typing as npt
 
 
-Array = np.ndarray
 IntArray = np.ndarray[Any, np.dtype[np.int_]]
 FloatArray = np.ndarray[Any, np.dtype[np.float64]]
 
@@ -21,7 +20,7 @@ Coord = tuple[int, int]
 Shape = tuple[int, int]
 SomDims = tuple[int, int, int]
 
-Metric = str | Callable[[Array, Array], float]
+Metric = str | Callable[[FloatArray, FloatArray], float]
 
 FilePath = pathlib.Path | str
 
