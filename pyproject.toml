@@ -22,8 +22,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-numpy = "^1.23.4"
-scipy = "^1.9.3"
+numpy = "^2.0.0"
+scipy = "^1.14.0"
 matplotlib = "^3.6.1"
 tox = "^4.9.0"
 
@@ -31,8 +31,8 @@ tox = "^4.9.0"
 optional = true
 
 [tool.poetry.group.development.dependencies]
-mypy = "^0.991"
-pylint = "^2.15.9"
+mypy = "^1.10"
+pylint = "^3.2.3"
 hypothesis = "^6.82.3"
 pytest = "^7.4.0"
 coverage = "^7.3.0"
