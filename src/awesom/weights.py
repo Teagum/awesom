@@ -17,7 +17,7 @@ class Weights:
         self.dx = dx
         self.dy = dy
         self.dw = dw
-        self.shape = (self.dx, self.dw, self.dw)
+        self.shape = (self.dx, self.dy, self.dw)
         self.n_units = self.dx * self.dy
         self._vectors = np.empty((self.n_units, self.dw), dtype=np.float64)
         self._rng = np.random.default_rng(seed)
