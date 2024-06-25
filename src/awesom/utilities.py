@@ -194,7 +194,7 @@ def pca(data: FloatArray, n_comps: int = 2
         ``n_comps`` largest eigen vectors,
         transformed input data.
     """
-    data_centered = (data - data.mean(axis=0))
+    data_centered = data - data.mean(axis=0)
     _, vals, vects = np.linalg.svd(data_centered)
 
     ord_idx = np.flip(vals.argsort())[:n_comps]
