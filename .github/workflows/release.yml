@@ -44,8 +44,11 @@ jobs:
       - name: Retrieve all artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          path: ./dist
+          path: ./artifacts
       - name: Prepare artifacts
-        run:  ls -R ./dist
+        run:  |
+          cp ./artifacts/* ./dist
+          ls ./artifacts
+          ls ./dist
       - name: Upload files
         uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597
