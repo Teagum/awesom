@@ -48,6 +48,6 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir ./dist
-          cp ./artifacts/**/*.{whl,tar.gz} ./dist
+          ls -R ./dist
       - name: Upload files
         uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597
