@@ -25,7 +25,7 @@ jobs:
         run: python -m build
 
       - name: Upload source distribution
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
         with:
           name: "awesom-sdist-tgz"
           path: dist/*.tar.gz
@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Retrieve all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
           path: ./artifacts
       - name: Prepare artifacts
