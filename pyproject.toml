@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "awesom"
-version = "0.1.5"
+version = "0.1.6"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
 license = "BSD-3-Clause"
