@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "awesom"
-version = "0.1.5"
+version = "0.1.6"
 description = "Self-organizing map framework for Python"
 authors = ["Michael Blaß <mblass@posteo.net>"]
 license = "BSD-3-Clause"
@@ -8,6 +8,9 @@ readme = "README.md"
 homepage = "https://github.com/Teagum/awesom"
 classifiers = [
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Education",
