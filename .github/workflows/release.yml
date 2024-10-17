@@ -47,6 +47,7 @@ jobs:
           path: ./artifacts
       - name: Prepare artifacts
         run:  |
+          mkdir ./dist
           cp -r ./artifacts/awesom-sdist/* ./dist
           ls ./artifacts
           ls ./dist
