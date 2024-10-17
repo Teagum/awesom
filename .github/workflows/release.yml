@@ -50,4 +50,4 @@ jobs:
           mkdir ./dist
           cp ./artifacts/**/*.{whl,tar.gz} ./dist
       - name: Upload files
-        uses: pypa/gh-action-pypi-publish@f8c70e705ffc13c3b4d1221169b84f12a75d6ca8
+        uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597
